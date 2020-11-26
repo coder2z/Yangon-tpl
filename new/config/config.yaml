@@ -1,0 +1,21 @@
+server:
+  addr: 0.0.0.0:80
+  locale: zh
+mysql:
+  tablePrefix: ndisk
+  host: 127.0.0.1
+  username: root
+  password: root
+  dbName: demo
+  type: mysql
+  debug: true
+log:
+  level: info
+  development: false
+  httpServer:
+    open: true
+    addr: 0.0.0.0:9000
+  outputPaths:
+    - "log.log"
+  errorOutputPaths:
+    - "err.log"
