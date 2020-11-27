@@ -33,13 +33,13 @@ func (a *{{TableName}}) Del(wheres map[string]interface{}) error {
 }
 
 //查询所有
-func (a *{{TableName}}) GetAll() (data []{{TableName}}, err error) {
+func (a *{{TableName}}) GetAll(data *[]{{TableName}}) (err error) {
 	err = model.MainDB.Table(a.TableName()).Find(&data).Error
 	return
 }
 
 //偏移查询
-func (a *{{TableName}}) Get(start int64, size int64, wheres map[string]interface{}) (data []{{TableName}}, total int64, err error) {
+func (a *{{TableName}}) Get(start int64, size int64, data *[]{{TableName}}, wheres map[string]interface{}) (total int64, err error) {
 	db := model.MainDB.Table(a.TableName())
 	for k, v := range wheres {
 		db = db.Where(k, v)
