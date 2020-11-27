@@ -3,11 +3,11 @@ package {{AppName}}
 import (
 	"context"
 	"fmt"
-	"net/http"
 	"{{ProjectName}}/internal/{{AppName}}/config"
 	"{{ProjectName}}/internal/{{AppName}}/model"
 	"{{ProjectName}}/pkg/client/database"
 	"{{ProjectName}}/pkg/log"
+	"net/http"
 )
 
 type Server struct {
@@ -17,11 +17,10 @@ type Server struct {
 }
 
 func (s *Server) PrepareRun(stopCh <-chan struct{}) (err error) {
-	//配置
 	s.initCfg()
+	s.initLog()
 	s.initDB(stopCh)
 	s.initHttpServer()
-	s.initLog()
 	return s.err
 }
 
@@ -30,6 +29,7 @@ func (s *Server) Run(stopCh <-chan struct{}) (err error) {
 	defer cancel()
 	go func() {
 		<-stopCh
+		log.Info(fmt.Sprintf("Shutdown server"))
 		_ = s.Server.Shutdown(ctx)
 	}()
 	log.Info(fmt.Sprintf("Start listening on %s", s.Server.Addr))
@@ -49,7 +49,9 @@ func (s *Server) initDB(stopCh <-chan struct{}) {
 		return
 	}
 	var c *database.Client
+	log.Info(fmt.Sprintf("db init"))
 	c, s.err = database.NewDatabaseClient(s.Config.Mysql, stopCh)
+	log.Info(fmt.Sprintf("db init over"))
 	model.MainDB = c.DB()
 	if model.MainDB != nil {
 		s.migrate()
