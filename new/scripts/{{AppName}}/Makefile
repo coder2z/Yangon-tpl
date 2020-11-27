@@ -1,0 +1,14 @@
+.PHONY: build-image
+build-image: build-{{AppName}}-server
+
+.PHONY: build-{{AppName}}-server
+build-{{AppName}}-server:
+	docker build -f build/{{AppName}}/Dockerfile -t k8s-{{AppName}}:v1 .
+
+.PHONY: run-{{AppName}}
+run-{{AppName}}:
+	go run cmd/{{AppName}}/main.go
+
+.PHONY: build-{{AppName}}
+run-{{AppName}}:
+	go build -o  cmd/{{AppName}}/{{AppName}} cmd/{{AppName}}/main.go

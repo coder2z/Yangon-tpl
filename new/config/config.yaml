@@ -17,5 +17,7 @@ log:
     addr: 0.0.0.0:9000
   outputPaths:
     - "log.log"
+    - "stdout"
   errorOutputPaths:
     - "err.log"
+    - "stdout"
