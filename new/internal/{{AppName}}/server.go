@@ -51,8 +51,9 @@ func (s *Server) initDB(stopCh <-chan struct{}) {
 	var c *database.Client
 	c, s.err = database.NewDatabaseClient(s.Config.Mysql, stopCh)
 	model.MainDB = c.DB()
-	s.migrate()
-
+	if model.MainDB != nil {
+		s.migrate()
+	}
 }
 
 func (s *Server) initHttpServer() {
