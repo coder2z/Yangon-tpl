@@ -3,6 +3,7 @@ package {{AppName}}
 import (
 	"context"
 	"fmt"
+	"{{ProjectName}}/internal/{{AppName}}/api/v1/registry"
 	"{{ProjectName}}/internal/{{AppName}}/config"
 	"{{ProjectName}}/internal/{{AppName}}/model"
 	"{{ProjectName}}/pkg/client/database"
@@ -21,6 +22,7 @@ func (s *Server) PrepareRun(stopCh <-chan struct{}) (err error) {
 	s.initLog()
 	s.initDB(stopCh)
 	s.initHttpServer()
+	s.initRouter()
 	return s.err
 }
 
@@ -53,9 +55,6 @@ func (s *Server) initDB(stopCh <-chan struct{}) {
 	c, s.err = database.NewDatabaseClient(s.Config.Mysql, stopCh)
 	log.Info(fmt.Sprintf("db init over"))
 	model.MainDB = c.DB()
-	if model.MainDB != nil {
-		s.migrate()
-	}
 }
 
 func (s *Server) initHttpServer() {
@@ -73,8 +72,6 @@ func (s *Server) initLog() {
 	s.err = log.NewLog(s.Config.Log)
 }
 
-func (s *Server) migrate() {
-	model.MainDB.AutoMigrate(
-		//new(model.App),
-	)
+func (s *Server) initRouter() {
+	s.Server.Handler = registry.Router
 }
