@@ -6,13 +6,13 @@ package R
 
 type PageData struct {
 	//当前页码
-	PageNo int
+	PageNo int64
 	//每页大小
-	PageSize int
+	PageSize int64
 	//一共的页数
-	TotalPage int
+	TotalPage int64
 	//总条数
-	TotalCount int
+	TotalCount int64
 	//是否是第一页
 	FirstPage bool
 	//是否是最后一页
@@ -22,7 +22,7 @@ type PageData struct {
 }
 
 //总条数  当前页码  每页大小   数据list
-func Page(count int, pageNo int, pageSize int, list interface{}) PageData {
+func Page(count int64, pageNo int64, pageSize int64, list interface{}) PageData {
 	tp := count / pageSize
 	if count%pageSize > 0 {
 		tp = count/pageSize + 1

@@ -6,6 +6,7 @@ import (
 	"{{ProjectName}}/internal/{{AppName}}/api/v1/registry"
 	"{{ProjectName}}/internal/{{AppName}}/config"
 	"{{ProjectName}}/internal/{{AppName}}/model"
+	myValidator "{{ProjectName}}/internal/{{AppName}}/validator"
 	"{{ProjectName}}/pkg/client/database"
 	"{{ProjectName}}/pkg/log"
 	"net/http"
@@ -23,6 +24,7 @@ func (s *Server) PrepareRun(stopCh <-chan struct{}) (err error) {
 	s.initDB(stopCh)
 	s.initHttpServer()
 	s.initRouter()
+	s.initValidator()
 	return s.err
 }
 
@@ -73,5 +75,15 @@ func (s *Server) initLog() {
 }
 
 func (s *Server) initRouter() {
+	if s.err != nil {
+		return
+	}
 	s.Server.Handler = registry.Router
+}
+
+func (s *Server) initValidator() {
+	if s.err != nil {
+		return
+	}
+	s.err = validator.Init(s.Config.Server.Locale, myValidator.RegisterValidation)
 }

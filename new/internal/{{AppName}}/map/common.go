@@ -16,5 +16,5 @@ type PageList struct {
 }
 
 type IdMap struct {
-	Id uint `json:"id" form:"id" validate:"required,number,min=1" label:"id"`
+	Id uint `uri:"id" json:"id" validate:"required,number,min=1" label:"id"`
 }
