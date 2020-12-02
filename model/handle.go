@@ -12,7 +12,7 @@ import (
 type {{TableName}} struct{}
 
 func ({{TableName}}) GetAll(ctx *gin.Context) {
-	var page _map.PageList
+	var page = _map.DefaultPageRequest
 	if err := ctx.Bind(&page); err != nil {
 		httpError.HandleBadRequest(ctx, nil)
 		return
@@ -30,7 +30,7 @@ func ({{TableName}}) GetAll(ctx *gin.Context) {
 }
 
 func ({{TableName}}) Post(ctx *gin.Context) {
-	var addMap _map.AddServer
+	var addMap _map.{{AppName}}AddServer
 	if err := ctx.Bind(&addMap); err != nil {
 		httpError.HandleBadRequest(ctx, nil)
 		return
@@ -66,7 +66,7 @@ func ({{TableName}}) Get(ctx *gin.Context) {
 }
 
 func ({{TableName}}) Put(ctx *gin.Context) {
-	var put _map.PutServer
+	var put _map.{{AppName}}PutServer
 	if err := ctx.Bind(&put); err != nil {
 		httpError.HandleBadRequest(ctx, nil)
 		return
