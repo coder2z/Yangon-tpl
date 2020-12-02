@@ -30,7 +30,7 @@ func ({{TableName}}) GetAll{{TableName}}(ctx *gin.Context) {
 }
 
 func ({{TableName}}) Post{{TableName}}(ctx *gin.Context) {
-	var addMap _map.{{AppName}}AddServer
+	var addMap _map.{{TableName}}AddServer
 	if err := ctx.Bind(&addMap); err != nil {
 		httpError.HandleBadRequest(ctx, nil)
 		return
@@ -66,7 +66,7 @@ func ({{TableName}}) Get{{TableName}}(ctx *gin.Context) {
 }
 
 func ({{TableName}}) Put{{TableName}}(ctx *gin.Context) {
-	var put _map.{{AppName}}PutServer
+	var put _map.{{TableName}}PutServer
 	if err := ctx.Bind(&put); err != nil {
 		httpError.HandleBadRequest(ctx, nil)
 		return
