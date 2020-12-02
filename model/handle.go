@@ -21,7 +21,7 @@ func ({{TableName}}) GetAll{{TableName}}(ctx *gin.Context) {
 		httpError.HandleBadRequest(ctx, validator.GetMsg(err))
 		return
 	}
-	if data, total, err := server.GetAllServer(page); err != nil {
+	if data, total, err := {{tableName}}.GetAllServer(page); err != nil {
 		R.Error(ctx, err.Error(), nil)
 	} else {
 		R.Ok(ctx, R.MSG_OK, R.Page(total, page.Page, page.PageSize, data))
@@ -39,7 +39,7 @@ func ({{TableName}}) Post{{TableName}}(ctx *gin.Context) {
 		httpError.HandleBadRequest(ctx, validator.GetMsg(err))
 		return
 	}
-	if err := server.AddServer(addMap); err != nil {
+	if err := {{tableName}}.AddServer(addMap); err != nil {
 		R.Error(ctx, err.Error(), nil)
 		return
 	}
@@ -57,7 +57,7 @@ func ({{TableName}}) Get{{TableName}}(ctx *gin.Context) {
 		httpError.HandleBadRequest(ctx, validator.GetMsg(err))
 		return
 	}
-	if data, err := server.GetByIdServer(id); err != nil {
+	if data, err := {{tableName}}.GetByIdServer(id); err != nil {
 		R.Error(ctx, err.Error(), nil)
 	} else {
 		R.Ok(ctx, R.MSG_OK, data)
@@ -75,7 +75,7 @@ func ({{TableName}}) Put{{TableName}}(ctx *gin.Context) {
 		httpError.HandleBadRequest(ctx, validator.GetMsg(err))
 		return
 	}
-	if err := server.PutByIdServer(put); err != nil {
+	if err := {{tableName}}.PutByIdServer(put); err != nil {
 		R.Error(ctx, err.Error(), nil)
 	} else {
 		R.Ok(ctx, R.MSG_OK, nil)
@@ -93,7 +93,7 @@ func ({{TableName}}) Del{{TableName}}(ctx *gin.Context) {
 		httpError.HandleBadRequest(ctx, validator.GetMsg(err))
 		return
 	}
-	if err := server.DelServer(del); err != nil {
+	if err := {{tableName}}.DelServer(del); err != nil {
 		R.Error(ctx, err.Error(), nil)
 	} else {
 		R.Ok(ctx, R.MSG_OK, nil)

@@ -1,10 +1,10 @@
 package _map
 
-type {{AppName}}AddServer struct {
+type {{TableName}}AddServer struct {
 	{{TableFieldMap}}
 }
 
-type {{AppName}}PutServer struct {
+type {{TableName}}PutServer struct {
 	IdMap
 	{{TableFieldMap}}
 }
