@@ -1,9 +1,9 @@
 package handle
 
 import (
-	"{{ProjectName}}/internal/{{AppName}}/error/httpError"
-	_map "{{ProjectName}}/internal/{{AppName}}/map"
-	"{{ProjectName}}/internal/{{AppName}}/server"
+	"{{ProjectName}}/internal/{{appName}}/error/httpError"
+	_map "{{ProjectName}}/internal/{{appName}}/map"
+	"{{ProjectName}}/internal/{{appName}}/server/{{tableName}}"
 	R "{{ProjectName}}/pkg/response"
 	"{{ProjectName}}/pkg/validator"
 	"github.com/gin-gonic/gin"
@@ -11,7 +11,7 @@ import (
 
 type {{TableName}} struct{}
 
-func ({{TableName}}) GetAll(ctx *gin.Context) {
+func ({{TableName}}) GetAll{{TableName}}(ctx *gin.Context) {
 	var page = _map.DefaultPageRequest
 	if err := ctx.Bind(&page); err != nil {
 		httpError.HandleBadRequest(ctx, nil)
@@ -29,7 +29,7 @@ func ({{TableName}}) GetAll(ctx *gin.Context) {
 	return
 }
 
-func ({{TableName}}) Post(ctx *gin.Context) {
+func ({{TableName}}) Post{{TableName}}(ctx *gin.Context) {
 	var addMap _map.{{AppName}}AddServer
 	if err := ctx.Bind(&addMap); err != nil {
 		httpError.HandleBadRequest(ctx, nil)
@@ -47,7 +47,7 @@ func ({{TableName}}) Post(ctx *gin.Context) {
 	return
 }
 
-func ({{TableName}}) Get(ctx *gin.Context) {
+func ({{TableName}}) Get{{TableName}}(ctx *gin.Context) {
 	var id _map.IdMap
 	if err := ctx.BindUri(&id); err != nil {
 		httpError.HandleBadRequest(ctx, nil)
@@ -65,7 +65,7 @@ func ({{TableName}}) Get(ctx *gin.Context) {
 	return
 }
 
-func ({{TableName}}) Put(ctx *gin.Context) {
+func ({{TableName}}) Put{{TableName}}(ctx *gin.Context) {
 	var put _map.{{AppName}}PutServer
 	if err := ctx.Bind(&put); err != nil {
 		httpError.HandleBadRequest(ctx, nil)
@@ -83,7 +83,7 @@ func ({{TableName}}) Put(ctx *gin.Context) {
 	return
 }
 
-func ({{TableName}}) Del(ctx *gin.Context) {
+func ({{TableName}}) Del{{TableName}}(ctx *gin.Context) {
 	var del _map.IdMap
 	if err := ctx.BindUri(&del); err != nil {
 		httpError.HandleBadRequest(ctx, nil)

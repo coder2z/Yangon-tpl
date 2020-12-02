@@ -1,8 +1,8 @@
-package server
+package {{tableName}}
 
 import (
-	_map "{{ProjectName}}/internal/{{AppName}}/map"
-	"{{ProjectName}}/internal/{{AppName}}/model/{{tableName}}"
+	_map "{{ProjectName}}/internal/{{appName}}/map"
+	"{{ProjectName}}/internal/{{appName}}/model/{{tableName}}"
 )
 
 func GetAllServer(page _map.PageList) (data []{{tableName}}.{{TableName}}, total int64, err error) {

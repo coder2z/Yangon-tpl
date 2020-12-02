@@ -1,8 +1,7 @@
 package {{tableName}}
 
 import (
-	"{{ProjectName}}/internal/{{AppName}}/model"
-	"github.com/jinzhu/gorm"
+	"{{ProjectName}}/internal/{{appName}}/model"
 	{{IsTime}}
 )
 
