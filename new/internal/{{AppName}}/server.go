@@ -9,6 +9,7 @@ import (
 	myValidator "{{ProjectName}}/internal/{{AppName}}/validator"
 	"{{ProjectName}}/pkg/client/database"
 	"{{ProjectName}}/pkg/log"
+	"{{ProjectName}}/pkg/validator"
 	"net/http"
 )
 
