@@ -11,7 +11,7 @@ func GetAllServer(page _map.PageList) (data []{{tableName}}.{{TableName}}, total
 	return
 }
 
-func AddServer(add _map.{{AppName}}AddServer) (err error) {
+func AddServer(add _map.{{TableName}}AddServer) (err error) {
 	//todo 添加手动赋值
 	data := &{{tableName}}.{{TableName}}{
 
@@ -27,7 +27,7 @@ func GetByIdServer(idMap _map.IdMap) (data *{{tableName}}.{{TableName}}, err err
 	return
 }
 
-func PutByIdServer(put _map.{{AppName}}PutServer) (err error) {
+func PutByIdServer(put _map.{{TableName}}PutServer) (err error) {
 	//todo 修改手动赋值
 	data := &{{tableName}}.{{TableName}}{
 
