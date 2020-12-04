@@ -34,7 +34,7 @@ func NewRedisClient(o *Options, stopCh <-chan struct{}) (c *Client, err error) {
 		_ = rdb.Close()
 	}()
 
-	return &Client{redis: rdb}, nil
+	return &Client{redis: rdb}, rdb.Ping(context.Background()).Err()
 
 }
 

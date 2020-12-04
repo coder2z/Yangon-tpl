@@ -10,5 +10,5 @@ run-{{AppName}}:
 	go run cmd/{{AppName}}/main.go
 
 .PHONY: build-{{AppName}}
-run-{{AppName}}:
+build-{{AppName}}:
 	go build -o  cmd/{{AppName}}/{{AppName}} cmd/{{AppName}}/main.go

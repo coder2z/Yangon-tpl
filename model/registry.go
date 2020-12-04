@@ -1,15 +1,15 @@
 package registry
 
-import "{{ProjectName}}/internal/{{appName}}/api/v1/handle"
+import "{{ProjectName}}/internal/{{appName}}/api/{{version}}/handle"
 
 func init() {
-	v1 := Router.Group("/api/v1")
+	{{version}} := Router.Group("/api/{{version}}")
 	{
 		{{tableName}} := new(handle.{{TableName}})
-		v1.GET("/{{tableName}}", {{tableName}}.GetAll{{TableName}})
-		v1.GET("/{{tableName}}/:id", {{tableName}}.Get{{TableName}})
-		v1.POST("/{{tableName}}", {{tableName}}.Post{{TableName}})
-		v1.PUT("/{{tableName}}/:id", {{tableName}}.Put{{TableName}})
-		v1.DELETE("/{{tableName}}/:id", {{tableName}}.Del{{TableName}})
+		{{version}}.GET("/{{tableName}}", {{tableName}}.GetAll{{TableName}})
+		{{version}}.GET("/{{tableName}}/:id", {{tableName}}.Get{{TableName}})
+		{{version}}.POST("/{{tableName}}", {{tableName}}.Post{{TableName}})
+		{{version}}.PUT("/{{tableName}}/:id", {{tableName}}.Put{{TableName}})
+		{{version}}.DELETE("/{{tableName}}/:id", {{tableName}}.Del{{TableName}})
 	}
 }

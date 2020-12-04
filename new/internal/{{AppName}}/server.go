@@ -58,6 +58,7 @@ func (s *Server) initDB(stopCh <-chan struct{}) {
 	c, s.err = database.NewDatabaseClient(s.Config.Mysql, stopCh)
 	log.Info(fmt.Sprintf("db init over"))
 	model.MainDB = c.DB()
+	s.initMigrate()
 }
 
 func (s *Server) initHttpServer() {
@@ -87,4 +88,15 @@ func (s *Server) initValidator() {
 		return
 	}
 	s.err = validator.Init(s.Config.Server.Locale, myValidator.RegisterValidation)
+}
+
+func (s *Server) initMigrate() {
+	if s.err != nil {
+		return
+	}
+	if model.MainDB != nil {
+		model.MainDB.AutoMigrate(
+			//new(info.Info),
+		)
+	}
 }

@@ -13,7 +13,7 @@ type {{TableName}} struct{}
 
 func ({{TableName}}) GetAll{{TableName}}(ctx *gin.Context) {
 	var page = _map.DefaultPageRequest
-	if err := ctx.Bind(&page); err != nil {
+	if err := ctx.ShouldBind(&page); err != nil {
 		httpError.HandleBadRequest(ctx, nil)
 		return
 	}
@@ -31,7 +31,7 @@ func ({{TableName}}) GetAll{{TableName}}(ctx *gin.Context) {
 
 func ({{TableName}}) Post{{TableName}}(ctx *gin.Context) {
 	var addMap _map.{{TableName}}AddServer
-	if err := ctx.Bind(&addMap); err != nil {
+	if err := ctx.ShouldBind(&addMap); err != nil {
 		httpError.HandleBadRequest(ctx, nil)
 		return
 	}
@@ -49,7 +49,7 @@ func ({{TableName}}) Post{{TableName}}(ctx *gin.Context) {
 
 func ({{TableName}}) Get{{TableName}}(ctx *gin.Context) {
 	var id _map.IdMap
-	if err := ctx.BindUri(&id); err != nil {
+	if err := ctx.ShouldBindUri(&id); err != nil {
 		httpError.HandleBadRequest(ctx, nil)
 		return
 	}
@@ -67,7 +67,7 @@ func ({{TableName}}) Get{{TableName}}(ctx *gin.Context) {
 
 func ({{TableName}}) Put{{TableName}}(ctx *gin.Context) {
 	var put _map.{{TableName}}PutServer
-	if err := ctx.Bind(&put); err != nil {
+	if err := ctx.ShouldBind(&put); err != nil {
 		httpError.HandleBadRequest(ctx, nil)
 		return
 	}
@@ -85,7 +85,7 @@ func ({{TableName}}) Put{{TableName}}(ctx *gin.Context) {
 
 func ({{TableName}}) Del{{TableName}}(ctx *gin.Context) {
 	var del _map.IdMap
-	if err := ctx.BindUri(&del); err != nil {
+	if err := ctx.ShouldBind(&del); err != nil {
 		httpError.HandleBadRequest(ctx, nil)
 		return
 	}
