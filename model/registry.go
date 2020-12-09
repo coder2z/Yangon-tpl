@@ -11,5 +11,6 @@ func init() {
 		{{version}}.POST("/{{tableName}}", {{tableName}}.Post{{TableName}})
 		{{version}}.PUT("/{{tableName}}/:id", {{tableName}}.Put{{TableName}})
 		{{version}}.DELETE("/{{tableName}}/:id", {{tableName}}.Del{{TableName}})
+		{{version}}.PATCH("/{{tableName}}/:id/rec", {{tableName}}.Rec{{TableName}})
 	}
 }

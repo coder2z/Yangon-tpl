@@ -100,3 +100,21 @@ func ({{TableName}}) Del{{TableName}}(ctx *gin.Context) {
 	}
 	return
 }
+
+func ({{TableName}}) Rec{{TableName}}(ctx *gin.Context) {
+	var recDel _map.IdMap
+	if err := ctx.ShouldBind(&recDel); err != nil {
+		httpError.HandleBadRequest(ctx, nil)
+		return
+	}
+	if err := validator.Struct(recDel); err != nil {
+		httpError.HandleBadRequest(ctx, validator.GetMsg(err))
+		return
+	}
+	if err := {{tableName}}.RecDelServer(recDel); err != nil {
+		R.Error(ctx, err.Error(), nil)
+	} else {
+		R.Ok(ctx, R.MSG_OK, nil)
+	}
+	return
+}
