@@ -111,7 +111,7 @@ func GetMsg(err error) ValidationError {
 
 func NewValidationError(errMap map[string]string) ValidationError {
 	res := make([]string, 0)
-	for k, v := range errMap {
+	for _, v := range errMap {
 		//fmt.Println(k)
 		//fmt.Println(field[strings.Index(field, ".")+1:])
 		res = append(res, v)
