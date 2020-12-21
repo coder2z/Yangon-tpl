@@ -5,10 +5,6 @@ import (
 	{{.IsTime}}
 )
 
-func init() {
-	model.MainDB.AutoMigrate(new({{.TableName}}))
-}
-
 type {{.TableName}} struct {
 	{{.TableFieldList}}
 }
