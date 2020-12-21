@@ -2,7 +2,7 @@ FROM golang:1.14-alpine AS builder
 RUN apk update && mkdir /app
 WORKDIR /app
 COPY . /app
-RUN CGO_ENABLED=0 go build -o  dist/{{AppName}} -a -ldflags "-w -s" ./cmd/{{AppName}}
+RUN CGO_ENABLED=0 go build -o  dist/{{.AppName}} -a -ldflags "-w -s" ./cmd/{{.AppName}}
 
 FROM alpine:3.10
 
@@ -21,8 +21,8 @@ RUN apk update \
   && cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
   && mkdir /app
 WORKDIR /app
-COPY --from=builder /app/dist/{{AppName}} /app/{{AppName}}
+COPY --from=builder /app/dist/{{.AppName}} /app/{{.AppName}}
 
 EXPOSE 80
 
-CMD ["/app/{{AppName}}"]
+CMD ["/app/{{.AppName}}"]

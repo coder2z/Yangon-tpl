@@ -1,8 +1,8 @@
 package httpError
 
 import (
-	"{{ProjectName}}/pkg/log"
-	R "{{ProjectName}}/pkg/response"
+	"{{.ProjectName}}/pkg/log"
+	R "{{.ProjectName}}/pkg/response"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )

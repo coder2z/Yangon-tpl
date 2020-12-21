@@ -1,2 +1,2 @@
-name: {{ProjectName}}-k8s-{{AppName}}
+name: {{.ProjectName}}-k8s-{{.AppName}}
 version: v1

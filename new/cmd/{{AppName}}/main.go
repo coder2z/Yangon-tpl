@@ -3,8 +3,8 @@ package main
 import (
 	"fmt"
 	"os"
-	"{{ProjectName}}/cmd/{{AppName}}/app"
-	"{{ProjectName}}/pkg/signals"
+	"{{.ProjectName}}/cmd/{{.AppName}}/app"
+	"{{.ProjectName}}/pkg/signals"
 )
 
 func main() {

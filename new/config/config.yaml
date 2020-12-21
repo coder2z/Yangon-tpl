@@ -2,11 +2,11 @@ server:
   addr: 0.0.0.0:80
   locale: zh
 mysql:
-  tablePrefix: {{ProjectName}}
+  tablePrefix: {{.ProjectName}}
   host: 127.0.0.1
   username: root
   password: root
-  dbName: {{ProjectName}}
+  dbName: {{.ProjectName}}
   type: mysql
   debug: true
 log:

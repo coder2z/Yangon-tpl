@@ -1,8 +1,8 @@
 package app
 
 import (
-	"{{ProjectName}}/cmd"
-	s "{{ProjectName}}/internal/{{AppName}}"
+	"{{.ProjectName}}/cmd"
+	s "{{.ProjectName}}/internal/{{.AppName}}"
 )
 
 func Run(stopCh <-chan struct{}) error {

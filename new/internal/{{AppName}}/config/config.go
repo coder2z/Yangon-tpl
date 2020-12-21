@@ -3,9 +3,9 @@ package config
 import (
 	"fmt"
 	"github.com/spf13/viper"
-	"{{ProjectName}}/internal/{{AppName}}/config/server"
-	"{{ProjectName}}/pkg/client/database"
-	"{{ProjectName}}/pkg/log"
+	"{{.ProjectName}}/internal/{{.AppName}}/config/server"
+	"{{.ProjectName}}/pkg/client/database"
+	"{{.ProjectName}}/pkg/log"
 )
 
 const (

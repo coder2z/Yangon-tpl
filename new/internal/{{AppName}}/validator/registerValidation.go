@@ -5,7 +5,7 @@
 package validator
 
 import (
-	va "{{ProjectName}}/pkg/validator"
+	va "{{.ProjectName}}/pkg/validator"
 )
 
 var RegisterValidation = map[string]*va.Register{

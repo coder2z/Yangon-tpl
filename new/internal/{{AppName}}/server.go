@@ -3,13 +3,13 @@ package {{AppName}}
 import (
 	"context"
 	"fmt"
-	"{{ProjectName}}/internal/{{AppName}}/api/v1/registry"
-	"{{ProjectName}}/internal/{{AppName}}/config"
-	"{{ProjectName}}/internal/{{AppName}}/model"
-	myValidator "{{ProjectName}}/internal/{{AppName}}/validator"
-	"{{ProjectName}}/pkg/client/database"
-	"{{ProjectName}}/pkg/log"
-	"{{ProjectName}}/pkg/validator"
+	"{{.ProjectName}}/internal/{{.AppName}}/api/v1/registry"
+	"{{.ProjectName}}/internal/{{.AppName}}/config"
+	"{{.ProjectName}}/internal/{{.AppName}}/model"
+	myValidator "{{.ProjectName}}/internal/{{.AppName}}/validator"
+	"{{.ProjectName}}/pkg/client/database"
+	"{{.ProjectName}}/pkg/log"
+	"{{.ProjectName}}/pkg/validator"
 	"net/http"
 )
 
