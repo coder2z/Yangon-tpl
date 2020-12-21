@@ -4,6 +4,7 @@ import (
 	_map "{{.ProjectName}}/internal/{{.appName}}/map"
 	"{{.ProjectName}}/internal/{{.appName}}/model/{{.tableName}}"
 	"github.com/jinzhu/gorm"
+	"{{.ProjectName}}/pkg/log"
 )
 
 func GetAllServer(page _map.PageList) (data []{{.tableName}}.{{.TableName}}, total int64, err error) {
@@ -55,7 +56,7 @@ func DelServer(idMap _map.IdMap) (err error) {
 }
 
 func RecDelServer(idMap _map.IdMap) (err error) {
-	data = new({{.tableName}}.{{.TableName}})
+	data := new({{.tableName}}.{{.TableName}})
 	data.{{.Id}} = idMap.Id
 	err = data.DelRes()
 	if !gorm.IsRecordNotFoundError(err) {
