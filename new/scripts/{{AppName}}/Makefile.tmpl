@@ -2,7 +2,7 @@
 build-image: build-{{.AppName}}-server
 
 .PHONY: build-{{.AppName}}-server
-build-{{AppName}}-server:
+build-{{.AppName}}-server:
 	docker build -f build/{{.AppName}}/Dockerfile -t k8s-{{.AppName}}:v1 .
 
 .PHONY: run-{{.AppName}}
