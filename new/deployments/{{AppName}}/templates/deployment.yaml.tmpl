@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: {{.ProjectName}}-{{.AppName}}
-        image: "{{index .Values.images 0}}:{{.Values.version}}"
+        image: "{{`{{index .Values.images 0}}`}}:{{`{{.Values.version}}`}}"
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 80
