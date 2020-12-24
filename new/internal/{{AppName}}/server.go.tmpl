@@ -94,7 +94,7 @@ func (s *Server) initRouter() {
 	if s.err != nil {
 		return
 	}
-	s.Server.Handler = registry.Router
+	s.Server.Handler = registry.Engine()
 }
 
 func (s *Server) initValidator() {

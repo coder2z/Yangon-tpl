@@ -3,7 +3,7 @@ package registry
 import "{{.ProjectName}}/internal/{{.appName}}/api/{{.version}}/handle"
 
 func init() {
-	{{.version}} := Router.Group("/api/{{.version}}")
+	{{.version}} := Engine().Group("/api/{{.version}}")
 	{
 		{{.tableName}} := new(handle.{{.TableName}})
 		{{.version}}.GET("/{{.tableName}}", {{.tableName}}.GetAll{{.TableName}})

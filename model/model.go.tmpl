@@ -38,7 +38,7 @@ func (a *{{.TableName}}) GetAll(data *[]{{.TableName}}, wheres map[string][]inte
 }
 
 //偏移查询
-func (a *{{.TableName}}) Get(start int64, size int64, data *[]{{.TableName}}, wheres map[string]interface{}, isDelete bool) (total int64, err error) {
+func (a *{{.TableName}}) Get(start int, size int, data *[]{{.TableName}}, wheres map[string]interface{}, isDelete bool) (total int64, err error) {
 	db := model.MainDB.Table(a.TableName())
 	for k, v := range wheres {
 		db = db.Where(k, v)
@@ -69,7 +69,7 @@ func (a *{{.TableName}}) GetById() error {
 
 //修改ById
 func (a *{{.TableName}}) UpdateById() error {
-	return model.MainDB.Table(a.TableName()).Where("id=?", a.{{.ID}}).Update(a).Error
+	return model.MainDB.Table(a.TableName()).Where("id=?", a.{{.ID}}).Updates(a).Error
 }
 
 //软删除恢复

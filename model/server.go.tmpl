@@ -10,8 +10,8 @@ import (
 func GetAllServer(page _map.PageList) (data []{{.tableName}}.{{.TableName}}, total int64, err error) {
 	data = make([]{{.tableName}}.{{.TableName}}, 0)
 	total, err = new({{.tableName}}.{{.TableName}}).Get(page.PageSize*(page.Page-1), page.PageSize, &data, nil, page.IsDelete)
-	if  err != nil &&!gorm.IsRecordNotFoundError(err) {
-		log.Info("GetAllServer", err.Error())
+	if err != nil {
+		xlog.Infow(("{{.tableName}} GetAllServer", err.Error())
 	}
 	return
 }
@@ -22,6 +22,9 @@ func AddServer(add _map.{{.TableName}}AddServer) (err error) {
 
 	}
 	err = data.Add()
+	if err != nil {
+		xlog.Errorw("{{.tableName}} AddServer", err.Error())
+	}
 	return
 }
 
@@ -29,8 +32,8 @@ func GetByIdServer(idMap _map.IdMap) (data *{{.tableName}}.{{.TableName}}, err e
 	data = new({{.tableName}}.{{.TableName}})
 	data.{{.Id}} = idMap.Id
 	err = data.GetById()
-	if  err != nil &&!gorm.IsRecordNotFoundError(err) {
-		log.Info("GetByIdServer", err.Error())
+	if err != nil {
+		xlog.Errorw("{{.tableName}} GetByIdServer", err.Error())
 	}
 	return
 }
@@ -41,16 +44,16 @@ func PutByIdServer(put _map.{{.TableName}}PutServer) (err error) {
 
 	}
 	err = data.UpdateById()
-	if  err != nil &&!gorm.IsRecordNotFoundError(err) {
-		log.Info("PutByIdServer", err.Error())
+	if err != nil {
+		xlog.Errorw("{{.tableName}} PutByIdServer", err.Error())
 	}
 	return
 }
 
 func DelServer(idMap _map.IdMap) (err error) {
 	err = new({{.tableName}}.{{.TableName}}).Del(map[string]interface{}{"{{.id}}=?": idMap.Id})
-	if  err != nil &&!gorm.IsRecordNotFoundError(err) {
-		log.Info("DelServer", err.Error())
+	if err != nil {
+		xlog.Errorw("{{.tableName}} DelServer", err.Error())
 	}
 	return
 }
@@ -59,8 +62,8 @@ func RecDelServer(idMap _map.IdMap) (err error) {
 	data := new({{.tableName}}.{{.TableName}})
 	data.{{.Id}} = idMap.Id
 	err = data.DelRes()
-	if  err != nil &&!gorm.IsRecordNotFoundError(err) {
-		log.Info("RecDelServer", err.Error())
+	if err != nil {
+		xlog.Errorw("{{.tableName}} RecDelServer", err.Error())
 	}
 	return
 }
