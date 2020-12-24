@@ -10,7 +10,7 @@ func GetAllServer(page _map.PageList) (data []{{.tableName}}.{{.TableName}}, tot
 	data = make([]{{.tableName}}.{{.TableName}}, 0)
 	total, err = new({{.tableName}}.{{.TableName}}).Get(page.PageSize*(page.Page-1), page.PageSize, &data, nil, page.IsDelete)
 	if err != nil {
-		xlog.Infow(("{{.tableName}} GetAllServer", err.Error())
+		xlog.Errorw("{{.tableName}} GetAllServer", err.Error())
 	}
 	return
 }
