@@ -1,14 +1,14 @@
 package httpError
 
 import (
-	"{{.ProjectName}}/pkg/log"
-	R "{{.ProjectName}}/pkg/response"
 	"github.com/gin-gonic/gin"
+	xlog "github.com/myxy99/component/log"
+	R "{{.ProjectName}}/pkg/response"
 	"net/http"
 )
 
 func HandleInternalError(ctx *gin.Context) {
-	log.Error("Internal Error", ctx.Err())
+	xlog.Errorw("Internal Error", ctx.Err())
 	R.Response(ctx, R.InternalError, "Internal Error", nil, http.StatusInternalServerError)
 	return
 }

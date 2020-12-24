@@ -2,15 +2,33 @@ package main
 
 import (
 	"fmt"
-	"os"
+	"github.com/myxy99/component/pkg/xcolor"
+	"github.com/myxy99/component/pkg/xflag"
+	"github.com/myxy99/component/pkg/xsignals"
 	"{{.ProjectName}}/cmd/{{.AppName}}/app"
-	"{{.ProjectName}}/pkg/signals"
+	"os"
 )
 
 func main() {
-	err := app.Run(signals.SetupSignalHandler())
-	if err != nil {
-		fmt.Println(err.Error())
-		os.Exit(1)
-	}
+	xflag.Register(
+		xflag.CommandNode{
+			Name: "run",
+			Command: &xflag.Command{
+				Use:   "run",
+				Short: "run your app",
+				Run: func(cmd *xflag.Command, args []string) {
+					err := app.Run(xsignals.SetupSignalHandler())
+					if err != nil {
+						fmt.Println(xcolor.Red(err.Error()))
+						os.Exit(1)
+					}
+				},
+			},
+			Flags: func(c *xflag.Command) {
+				c.Flags().StringP("config", "c", "", "配置文件")
+				_ = c.MarkFlagRequired("config")
+			},
+		},
+	)
+	_ = xflag.Parse()
 }

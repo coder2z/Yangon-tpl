@@ -3,25 +3,28 @@ package {{.AppName}}
 import (
 	"context"
 	"fmt"
+	"github.com/BurntSushi/toml"
+	invoker "github.com/myxy99/component"
+	"github.com/myxy99/component/config"
+	"github.com/myxy99/component/config/datasource/manager"
+	database "github.com/myxy99/component/gorm"
+	"github.com/myxy99/component/pkg/xcolor"
+	"github.com/myxy99/component/pkg/xflag"
+	"github.com/myxy99/component/pkg/xvalidator"
 	"{{.ProjectName}}/internal/{{.AppName}}/api/v1/registry"
-	"{{.ProjectName}}/internal/{{.AppName}}/config"
 	"{{.ProjectName}}/internal/{{.AppName}}/model"
 	myValidator "{{.ProjectName}}/internal/{{.AppName}}/validator"
-	"{{.ProjectName}}/pkg/client/database"
-	"{{.ProjectName}}/pkg/log"
-	"{{.ProjectName}}/pkg/validator"
 	"net/http"
 )
 
 type Server struct {
-	Config *config.Cfg
 	Server *http.Server
 	err    error
 }
 
 func (s *Server) PrepareRun(stopCh <-chan struct{}) (err error) {
 	s.initCfg()
-	s.initLog()
+	s.invoker()
 	s.initDB(stopCh)
 	s.initHttpServer()
 	s.initRouter()
@@ -34,10 +37,10 @@ func (s *Server) Run(stopCh <-chan struct{}) (err error) {
 	defer cancel()
 	go func() {
 		<-stopCh
-		log.Info(fmt.Sprintf("Shutdown server"))
+		fmt.Println(xcolor.Red(fmt.Sprintf("Shutdown server")))
 		_ = s.Server.Shutdown(ctx)
 	}()
-	log.Info(fmt.Sprintf("Start listening on %s", s.Server.Addr))
+	fmt.Println(xcolor.Blue(fmt.Sprintf("Start listening on %s", s.Server.Addr)))
 	err = s.Server.ListenAndServe()
 	return nil
 }
@@ -46,18 +49,36 @@ func (s *Server) initCfg() {
 	if s.err != nil {
 		return
 	}
-	s.Config, s.err = config.TryLoadFromDisk()
+	var data config.DataSource
+	data, s.err = manager.NewDataSource(xflag.NString("run", "config"))
+	if s.err != nil {
+		return
+	}
+	s.err = config.LoadFromDataSource(data, toml.Unmarshal)
+}
+
+func (s *Server) invoker() {
+	if s.err != nil {
+		return
+	}
+	invoker.Register(
+		database.Register("mysql"),
+		//redis.Register("redis"),
+	)
+	s.err = invoker.Init()
 }
 
 func (s *Server) initDB(stopCh <-chan struct{}) {
 	if s.err != nil {
 		return
 	}
-	var c *database.Client
-	log.Info(fmt.Sprintf("db init"))
-	c, s.err = database.NewDatabaseClient(s.Config.Mysql, stopCh)
-	log.Info(fmt.Sprintf("db init over"))
-	model.MainDB = c.DB()
+	model.MainDB = database.Invoker("main")
+	go func() {
+		<-stopCh
+		d, _ := model.MainDB.DB()
+		_ = d.Close()
+	}()
+
 	s.initMigrate()
 }
 
@@ -66,14 +87,7 @@ func (s *Server) initHttpServer() {
 		return
 	}
 	s.Server = new(http.Server)
-	s.Server.Addr = s.Config.Server.Addr
-}
-
-func (s *Server) initLog() {
-	if s.err != nil {
-		return
-	}
-	s.err = log.NewLog(s.Config.Log)
+	s.Server.Addr = config.GetString("server.addr")
 }
 
 func (s *Server) initRouter() {
@@ -87,7 +101,7 @@ func (s *Server) initValidator() {
 	if s.err != nil {
 		return
 	}
-	s.err = validator.Init(s.Config.Server.Locale, myValidator.RegisterValidation)
+	s.err = xvalidator.Init(config.GetString("server.locale"), myValidator.RegisterValidation)
 }
 
 func (s *Server) initMigrate() {
@@ -95,7 +109,7 @@ func (s *Server) initMigrate() {
 		return
 	}
 	if model.MainDB != nil {
-		model.MainDB.AutoMigrate(
+		_ = model.MainDB.AutoMigrate(
 			//new(info.Info),
 		)
 	}
