@@ -4,13 +4,13 @@ import (
 	"context"
 	"fmt"
 	"github.com/BurntSushi/toml"
-	invoker "github.com/myxy99/component"
-	"github.com/myxy99/component/config"
-	"github.com/myxy99/component/config/datasource/manager"
-	database "github.com/myxy99/component/gorm"
 	"github.com/myxy99/component/pkg/xcolor"
 	"github.com/myxy99/component/pkg/xflag"
 	"github.com/myxy99/component/pkg/xvalidator"
+	"github.com/myxy99/component/xcfg"
+	"github.com/myxy99/component/xcfg/datasource/manager"
+	"github.com/myxy99/component/xinvoker"
+	xgorm "github.com/myxy99/component/xinvoker/gorm"
 	"{{.ProjectName}}/internal/{{.AppName}}/api/v1/registry"
 	"{{.ProjectName}}/internal/{{.AppName}}/model"
 	myValidator "{{.ProjectName}}/internal/{{.AppName}}/validator"
@@ -49,30 +49,30 @@ func (s *Server) initCfg() {
 	if s.err != nil {
 		return
 	}
-	var data config.DataSource
+	var data xcfg.DataSource
 	data, s.err = manager.NewDataSource(xflag.NString("run", "config"))
 	if s.err != nil {
 		return
 	}
-	s.err = config.LoadFromDataSource(data, toml.Unmarshal)
+	s.err = xcfg.LoadFromDataSource(data, toml.Unmarshal)
 }
 
 func (s *Server) invoker() {
 	if s.err != nil {
 		return
 	}
-	invoker.Register(
-		database.Register("mysql"),
-		//redis.Register("redis"),
+	xinvoker.Register(
+		xgorm.Register("mysql"),
+		//xredis.Register("redis"),
 	)
-	s.err = invoker.Init()
+	s.err = xinvoker.Init()
 }
 
 func (s *Server) initDB(stopCh <-chan struct{}) {
 	if s.err != nil {
 		return
 	}
-	model.MainDB = database.Invoker("main")
+	model.MainDB = xgorm.Invoker("main")
 	go func() {
 		<-stopCh
 		d, _ := model.MainDB.DB()
@@ -87,7 +87,7 @@ func (s *Server) initHttpServer() {
 		return
 	}
 	s.Server = new(http.Server)
-	s.Server.Addr = config.GetString("server.addr")
+	s.Server.Addr = xcfg.GetString("server.addr")
 }
 
 func (s *Server) initRouter() {
@@ -101,7 +101,7 @@ func (s *Server) initValidator() {
 	if s.err != nil {
 		return
 	}
-	s.err = xvalidator.Init(config.GetString("server.locale"), myValidator.RegisterValidation)
+	s.err = xvalidator.Init(xcfg.GetString("server.locale"), myValidator.RegisterValidation)
 }
 
 func (s *Server) initMigrate() {
