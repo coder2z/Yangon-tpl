@@ -67,6 +67,9 @@ func (s *Server) invoker() {
 	if s.err != nil {
 		return
 	}
+	xdefer.Register(func() error {
+		return xinvoker.Close()
+	})
 	xinvoker.Register(
 		xgorm.Register("mysql"),
 		//xredis.Register("redis"),
