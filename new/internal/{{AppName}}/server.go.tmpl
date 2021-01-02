@@ -50,7 +50,7 @@ func (s *Server) initCfg() {
 		return
 	}
 	var data xcfg.DataSource
-	data, s.err = manager.NewDataSource(xflag.NString("run", "config"))
+	data, s.err = manager.NewDataSource(xflag.NString("run", "xcfg"))
 	if s.err != nil {
 		return
 	}
