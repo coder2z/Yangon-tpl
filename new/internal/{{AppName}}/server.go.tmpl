@@ -4,12 +4,14 @@ import (
 	"context"
 	"fmt"
 	"github.com/BurntSushi/toml"
-	"github.com/myxy99/component/pkg/xcolor"
+	"github.com/myxy99/component/pkg/xconsole"
 	"github.com/myxy99/component/pkg/xflag"
+	"github.com/myxy99/component/pkg/xdefer"
 	"github.com/myxy99/component/pkg/xvalidator"
 	"github.com/myxy99/component/xcfg"
 	"github.com/myxy99/component/xcfg/datasource/manager"
 	"github.com/myxy99/component/xinvoker"
+	"github.com/myxy99/component/xgovern"
 	xgorm "github.com/myxy99/component/xinvoker/gorm"
 	"{{.ProjectName}}/internal/{{.AppName}}/api/v1/registry"
 	"{{.ProjectName}}/internal/{{.AppName}}/model"
@@ -29,18 +31,22 @@ func (s *Server) PrepareRun(stopCh <-chan struct{}) (err error) {
 	s.initHttpServer()
 	s.initRouter()
 	s.initValidator()
+	s.govern()
 	return s.err
 }
 
 func (s *Server) Run(stopCh <-chan struct{}) (err error) {
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
 	go func() {
 		<-stopCh
-		fmt.Println(xcolor.Red(fmt.Sprintf("Shutdown server")))
-		_ = s.Server.Shutdown(ctx)
+		xdefer.Clean()
 	}()
-	fmt.Println(xcolor.Blue(fmt.Sprintf("Start listening on %s", s.Server.Addr)))
+	xdefer.Register(func() error {
+		ctx, cancel := context.WithCancel(context.Background())
+		defer cancel()
+		xconsole.Red(fmt.Sprintf("Shutdown server"))
+		return s.Server.Shutdown(ctx)
+	})
+	xconsole.Greenf("Start listening on:", s.Server.Addr)
 	err = s.Server.ListenAndServe()
 	return nil
 }
@@ -113,4 +119,11 @@ func (s *Server) initMigrate() {
 			//new(info.Info),
 		)
 	}
+}
+
+func (s *Server) govern() {
+	if s.err != nil {
+		return
+	}
+	go xgovern.Run()
 }
