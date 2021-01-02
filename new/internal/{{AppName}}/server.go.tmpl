@@ -43,7 +43,7 @@ func (s *Server) Run(stopCh <-chan struct{}) (err error) {
 	xdefer.Register(func() error {
 		ctx, cancel := context.WithCancel(context.Background())
 		defer cancel()
-		xconsole.Red(fmt.Sprintf("Shutdown server"))
+		xconsole.Red("http server Shutdown")
 		return s.Server.Shutdown(ctx)
 	})
 	xconsole.Greenf("Start listening on:", s.Server.Addr)
