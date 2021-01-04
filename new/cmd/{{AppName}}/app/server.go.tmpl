@@ -1,9 +1,9 @@
 package app
 
 import (
-	xapp "github.com/myxy99/component"
-	"{{.ProjectName}}/cmd"
-	s "{{.ProjectName}}/internal/{{.AppName}}"
+	"github.com/myxy99/{{.ProjectName}}/cmd"
+	s "github.com/myxy99/{{.ProjectName}}/internal/{{.AppName}}"
+	"sync"
 )
 
 func Run(stopCh <-chan struct{}) error {
@@ -16,6 +16,7 @@ func Run(stopCh <-chan struct{}) error {
 }
 
 func NewServer() cmd.App {
-	xapp.PrintVersion()
-	return &s.Server{}
+	return &s.Server{
+		WaitGroup: new(sync.WaitGroup),
+	}
 }
