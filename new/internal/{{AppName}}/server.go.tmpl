@@ -34,7 +34,6 @@ func (s *Server) PrepareRun(stopCh <-chan struct{}) (err error) {
 	s.initCfg()
 	s.debug()
 	s.invoker()
-	s.initDB(stopCh)
 	s.initHttpServer()
 	s.initRouter()
 	s.initValidator()
@@ -60,7 +59,7 @@ func (s *Server) Run(stopCh <-chan struct{}) (err error) {
 		return err
 	}
 	s.Wait()
-	return nil
+	return err
 }
 
 func (s *Server) debug() {
@@ -94,20 +93,6 @@ func (s *Server) invoker() {
 	s.err = xinvoker.Init()
 }
 
-func (s *Server) initDB(stopCh <-chan struct{}) {
-	if s.err != nil {
-		return
-	}
-	model.MainDB = xgorm.Invoker("main")
-	go func() {
-		<-stopCh
-		d, _ := model.MainDB.DB()
-		_ = d.Close()
-	}()
-
-	s.initMigrate()
-}
-
 func (s *Server) initHttpServer() {
 	if s.err != nil {
 		return
@@ -130,17 +115,6 @@ func (s *Server) initValidator() {
 	s.err = xvalidator.Init(xcfg.GetString("server.locale"), myValidator.RegisterValidation)
 }
 
-func (s *Server) initMigrate() {
-	if s.err != nil {
-		return
-	}
-	if model.MainDB != nil {
-		_ = model.MainDB.AutoMigrate(
-			//new(info.Info),
-		)
-	}
-}
-
 func (s *Server) govern() {
 	if s.err != nil {
 		return
@@ -154,12 +128,12 @@ func (s *Server) rpc() {
 		return
 	}
 	var (
-		rpcCfg *rpc.Config
+		rpcCfg *xrpc.Config
 		lis    net.Listener
 	)
-	rpcCfg = xcfg.UnmarshalWithExpect("rpc", rpc.DefaultConfig()).(*rpc.Config)
+	rpcCfg = xcfg.UnmarshalWithExpect("rpc", xrpc.DefaultConfig()).(*xrpc.Config)
 
-	s.err = rpc.DefaultRegistryEtcd(rpcCfg)
+	s.err = xrpc.DefaultRegistryEtcd(rpcCfg)
 	if s.err != nil {
 		return
 	}
@@ -169,14 +143,14 @@ func (s *Server) rpc() {
 		return
 	}
 
-	serve := grpc.NewServer(rpc.DefaultOption(rpcCfg)...)
+	serve := grpc.NewServer(xrpc.DefaultOption(rpcCfg)...)
+	xdefer.Register(func() error {
+    	serve.Stop()
+    	xconsole.Red("grpc server shutdown success ")
+    	return nil
+    })
 	go func() {
 		s.err = serve.Serve(lis)
 	}()
-	xdefer.Register(func() error {
-		serve.Stop()
-		xconsole.Red("grpc server shutdown success ")
-		return nil
-	})
 	xconsole.Greenf("grpc server start up success:", rpcCfg.Addr())
 }
