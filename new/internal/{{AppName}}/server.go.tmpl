@@ -2,47 +2,70 @@ package {{.AppName}}
 
 import (
 	"context"
-	"fmt"
 	"github.com/BurntSushi/toml"
-	"github.com/myxy99/component/pkg/xcolor"
+	xapp "github.com/myxy99/component"
+	"github.com/myxy99/component/pkg/xconsole"
 	"github.com/myxy99/component/pkg/xflag"
+	"github.com/myxy99/component/pkg/xdefer"
 	"github.com/myxy99/component/pkg/xvalidator"
 	"github.com/myxy99/component/xcfg"
 	"github.com/myxy99/component/xcfg/datasource/manager"
 	"github.com/myxy99/component/xinvoker"
+	"github.com/myxy99/component/xgovern"
+	"github.com/myxy99/component/xmonitor"
 	xgorm "github.com/myxy99/component/xinvoker/gorm"
-	"{{.ProjectName}}/internal/{{.AppName}}/api/v1/registry"
-	"{{.ProjectName}}/internal/{{.AppName}}/model"
-	myValidator "{{.ProjectName}}/internal/{{.AppName}}/validator"
+	"github.com/myxy99/{{.ProjectName}}/internal/{{.AppName}}/api/v1/registry"
+	"github.com/myxy99/{{.ProjectName}}/internal/{{.AppName}}/model"
+	myValidator "github.com/myxy99/{{.ProjectName}}/internal/{{.AppName}}/validator"
+	"github.com/myxy99/{{.ProjectName}}/pkg/rpc"
+	"google.golang.org/grpc"
+	"net"
 	"net/http"
+	"sync"
 )
 
 type Server struct {
 	Server *http.Server
 	err    error
+	*sync.WaitGroup
 }
 
 func (s *Server) PrepareRun(stopCh <-chan struct{}) (err error) {
 	s.initCfg()
+	s.debug()
 	s.invoker()
 	s.initDB(stopCh)
 	s.initHttpServer()
 	s.initRouter()
 	s.initValidator()
+	s.govern()
 	return s.err
 }
 
 func (s *Server) Run(stopCh <-chan struct{}) (err error) {
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
 	go func() {
 		<-stopCh
-		fmt.Println(xcolor.Red(fmt.Sprintf("Shutdown server")))
-		_ = s.Server.Shutdown(ctx)
+		s.Add(1)
+		xdefer.Clean()
+		s.Done()
 	}()
-	fmt.Println(xcolor.Blue(fmt.Sprintf("Start listening on %s", s.Server.Addr)))
-	err = s.Server.ListenAndServe()
+	xdefer.Register(func() error {
+		ctx, cancel := context.WithCancel(context.Background())
+		defer cancel()
+		xconsole.Red("http server shutdown")
+		return s.Server.Shutdown(ctx)
+	})
+	xconsole.Greenf("Start listening on:", s.Server.Addr)
+	if err = s.Server.ListenAndServe(); err != http.ErrServerClosed {
+		return err
+	}
+	s.Wait()
 	return nil
+}
+
+func (s *Server) debug() {
+	xconsole.ResetDebug(xapp.Debug())
+	xapp.PrintVersion()
 }
 
 func (s *Server) initCfg() {
@@ -50,7 +73,7 @@ func (s *Server) initCfg() {
 		return
 	}
 	var data xcfg.DataSource
-	data, s.err = manager.NewDataSource(xflag.NString("run", "config"))
+	data, s.err = manager.NewDataSource(xflag.NString("run", "xcfg"))
 	if s.err != nil {
 		return
 	}
@@ -61,6 +84,9 @@ func (s *Server) invoker() {
 	if s.err != nil {
 		return
 	}
+	xdefer.Register(func() error {
+		return xinvoker.Close()
+	})
 	xinvoker.Register(
 		xgorm.Register("mysql"),
 		//xredis.Register("redis"),
@@ -113,4 +139,44 @@ func (s *Server) initMigrate() {
 			//new(info.Info),
 		)
 	}
+}
+
+func (s *Server) govern() {
+	if s.err != nil {
+		return
+	}
+	xmonitor.Run()
+	go xgovern.Run()
+}
+
+func (s *Server) rpc() {
+	if s.err != nil {
+		return
+	}
+	var (
+		rpcCfg *rpc.Config
+		lis    net.Listener
+	)
+	rpcCfg = xcfg.UnmarshalWithExpect("rpc", rpc.DefaultConfig()).(*rpc.Config)
+
+	s.err = rpc.DefaultRegistryEtcd(rpcCfg)
+	if s.err != nil {
+		return
+	}
+
+	lis, s.err = net.Listen("tcp", rpcCfg.Addr())
+	if s.err != nil {
+		return
+	}
+
+	serve := grpc.NewServer(rpc.DefaultOption(rpcCfg)...)
+	go func() {
+		s.err = serve.Serve(lis)
+	}()
+	xdefer.Register(func() error {
+		serve.Stop()
+		xconsole.Red("grpc server shutdown success ")
+		return nil
+	})
+	xconsole.Greenf("grpc server start up success:", rpcCfg.Addr())
 }

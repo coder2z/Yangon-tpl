@@ -1,17 +1,38 @@
 [server]
-    addr = "0.0.0.0:80"
+    addr = "0.0.0.0:1124"
     locale = "zh"
+
+[app]
+    name="{{.ProjectName}}_{{.AppName}}"
+    debug= true
+    version="v0.1.0"
 
 [mysql.main]
     tablePrefix = "{{.ProjectName}}"
     host = "127.0.0.1"
     username = "root"
     password = "root"
-    dbName = "{{.ProjectName}}"
+    dbName = "{{.ProjectName}}_{{.AppName}}"
     type = "mysql"
     debug = true
 
-[log]
-    name = "log.log"
+[rpc]
+    etcd_addr="127.0.0.1:2380"
+    ip="0.0.0.0"
+    port=8484
+    register_ttl="10s"
+    register_interval="3s"
+
+[xlog]
+    name = "{{.ProjectName}}_{{.AppName}}.log"
     dir = "."
-    level = "info"
+    level = ""
+    async = false
+    debug = true
+    add_caller= true
+    caller_skip=2
+
+[app.govern]
+    host = "127.0.0.1"
+    port = 4569
+
