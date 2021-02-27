@@ -2,7 +2,7 @@ package handle
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/myxy99/component/pkg/xvalidator"
+	"github.com/coder2m/component/pkg/xvalidator"
 	"{{.ProjectName}}/internal/{{.appName}}/error/httpError"
 	_map "{{.ProjectName}}/internal/{{.appName}}/map"
 	"{{.ProjectName}}/internal/{{.appName}}/server/{{.tableName}}"
@@ -14,11 +14,11 @@ type {{.TableName}} struct{}
 func ({{.TableName}}) GetAll{{.TableName}}(ctx *gin.Context) {
 	var page = _map.DefaultPageRequest
 	if err := ctx.ShouldBind(&page); err != nil {
-		httpError.HandleBadRequest(ctx, nil)
+		R.HandleBadRequest(ctx, nil)
 		return
 	}
 	if err := xvalidator.Struct(page); err != nil {
-		httpError.HandleBadRequest(ctx, xvalidator.GetMsg(err))
+		R.HandleBadRequest(ctx, xvalidator.GetMsg(err))
 		return
 	}
 	if data, total, err := {{.tableName}}.GetAllServer(page); err != nil {
@@ -32,11 +32,11 @@ func ({{.TableName}}) GetAll{{.TableName}}(ctx *gin.Context) {
 func ({{.TableName}}) Post{{.TableName}}(ctx *gin.Context) {
 	var addMap _map.{{.TableName}}AddServer
 	if err := ctx.ShouldBind(&addMap); err != nil {
-		httpError.HandleBadRequest(ctx, nil)
+		R.HandleBadRequest(ctx, nil)
 		return
 	}
 	if err := xvalidator.Struct(addMap); err != nil {
-		httpError.HandleBadRequest(ctx, xvalidator.GetMsg(err))
+		R.HandleBadRequest(ctx, xvalidator.GetMsg(err))
 		return
 	}
 	if err := {{.tableName}}.AddServer(addMap); err != nil {
@@ -50,11 +50,11 @@ func ({{.TableName}}) Post{{.TableName}}(ctx *gin.Context) {
 func ({{.TableName}}) Get{{.TableName}}(ctx *gin.Context) {
 	var id _map.IdMap
 	if err := ctx.ShouldBindUri(&id); err != nil {
-		httpError.HandleBadRequest(ctx, nil)
+		R.HandleBadRequest(ctx, nil)
 		return
 	}
 	if err := xvalidator.Struct(id); err != nil {
-		httpError.HandleBadRequest(ctx, xvalidator.GetMsg(err))
+		R.HandleBadRequest(ctx, xvalidator.GetMsg(err))
 		return
 	}
 	if data, err := {{.tableName}}.GetByIdServer(id); err != nil {
@@ -68,11 +68,11 @@ func ({{.TableName}}) Get{{.TableName}}(ctx *gin.Context) {
 func ({{.TableName}}) Put{{.TableName}}(ctx *gin.Context) {
 	var put _map.{{.TableName}}PutServer
 	if err := ctx.ShouldBind(&put); err != nil {
-		httpError.HandleBadRequest(ctx, nil)
+		R.HandleBadRequest(ctx, nil)
 		return
 	}
 	if err := xvalidator.Struct(put); err != nil {
-		httpError.HandleBadRequest(ctx, xvalidator.GetMsg(err))
+		R.HandleBadRequest(ctx, xvalidator.GetMsg(err))
 		return
 	}
 	if err := {{.tableName}}.PutByIdServer(put); err != nil {
@@ -86,11 +86,11 @@ func ({{.TableName}}) Put{{.TableName}}(ctx *gin.Context) {
 func ({{.TableName}}) Del{{.TableName}}(ctx *gin.Context) {
 	var del _map.IdMap
 	if err := ctx.ShouldBind(&del); err != nil {
-		httpError.HandleBadRequest(ctx, nil)
+		R.HandleBadRequest(ctx, nil)
 		return
 	}
 	if err := xvalidator.Struct(del); err != nil {
-		httpError.HandleBadRequest(ctx, xvalidator.GetMsg(err))
+		R.HandleBadRequest(ctx, xvalidator.GetMsg(err))
 		return
 	}
 	if err := {{.tableName}}.DelServer(del); err != nil {
@@ -104,11 +104,11 @@ func ({{.TableName}}) Del{{.TableName}}(ctx *gin.Context) {
 func ({{.TableName}}) Rec{{.TableName}}(ctx *gin.Context) {
 	var recDel _map.IdMap
 	if err := ctx.ShouldBind(&recDel); err != nil {
-		httpError.HandleBadRequest(ctx, nil)
+		R.HandleBadRequest(ctx, nil)
 		return
 	}
 	if err := xvalidator.Struct(recDel); err != nil {
-		httpError.HandleBadRequest(ctx, xvalidator.GetMsg(err))
+		R.HandleBadRequest(ctx, xvalidator.GetMsg(err))
 		return
 	}
 	if err := {{.tableName}}.RecDelServer(recDel); err != nil {
