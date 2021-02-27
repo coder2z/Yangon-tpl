@@ -9,27 +9,36 @@ type {{.TableName}} struct {
 	{{.TableFieldList}}
 }
 
-func (a *{{.TableName}}) TableName() string {
+func (m *{{.TableName}}) TableName() string {
 	return "{{.tableName}}"
 }
 
 //添加
-func (a *{{.TableName}}) Add() error {
-	return model.MainDB.Table(a.TableName()).Create(a).Error
+func (m *{{.TableName}}) Add(ctx context.Context) error {
+	return model.MainDB().Table(m.TableName()).WithContext(ctx).Create(m).Error
 }
 
-//删除where
-func (a *{{.TableName}}) Del(wheres map[string]interface{}) error {
-	db := model.MainDB.Table(a.TableName())
-	for k, v := range wheres {
-		db = db.Where(k, v)
+//批量添加
+func (m *{{.TableName}}) Adds(ctx context.Context, data *[]{{.TableName}}) (count int64, err error) {
+	tx := model.MainDB().Table(m.TableName()).WithContext(ctx).CreateInBatches(data, 200)
+	err = tx.Error
+	count = tx.RowsAffected
+	return
+}
+
+func (m *{{.TableName}}) Del(ctx context.Context, wheres map[string][]interface{}) (count int64, err error) {
+	db := model.MainDB().Table(m.TableName()).WithContext(ctx)
+	for s, i := range wheres {
+		db = db.Where(s, i...)
 	}
-	return db.Delete(a).Error
+	tx := db.Delete(m)
+	err = tx.Error
+	count = tx.RowsAffected
+	return
 }
 
-//查询所有
-func (a *{{.TableName}}) GetAll(data *[]{{.TableName}}, wheres map[string][]interface{}) (err error) {
-	db := model.MainDB.Table(a.TableName())
+func (m *{{.TableName}}) GetAll(ctx context.Context, data *[]{{.TableName}}, wheres map[string][]interface{}) (err error) {
+	db := model.MainDB().Table(m.TableName()).WithContext(ctx)
 	for s, i := range wheres {
 		db = db.Where(s, i...)
 	}
@@ -37,43 +46,88 @@ func (a *{{.TableName}}) GetAll(data *[]{{.TableName}}, wheres map[string][]inte
 	return
 }
 
-//偏移查询
-func (a *{{.TableName}}) Get(start int, size int, data *[]{{.TableName}}, wheres map[string]interface{}, isDelete bool) (total int64, err error) {
-	db := model.MainDB.Table(a.TableName())
-	for k, v := range wheres {
-		db = db.Where(k, v)
-	}
-	if isDelete {
-		db = db.Unscoped().Where("{{.tableName}}.deleted_at is not null")
-	} else {
-		db = db.Where(map[string]interface{}{"deleted_at": nil})
-	}
-	err = db.Limit(size).Offset(start).Find(&data).Error
-	err = db.Count(&total).Error
-	return
-}
-
-func (a *{{.TableName}}) GetWhere(wheres map[string][]interface{}) (err error) {
-	db := model.MainDB.Table(a.TableName())
+func (m *{{.TableName}}) Get(ctx context.Context, start int, size int, data *[]{{.TableName}}, wheres map[string][]interface{}, isDelete bool) (total int64, err error) {
+	db := model.MainDB().Table(m.TableName()).WithContext(ctx)
 	for s, i := range wheres {
 		db = db.Where(s, i...)
 	}
-	err = db.Find(a).Error
+	if isDelete {
+		db = db.Unscoped().Where("deleted_at is not null")
+	} else {
+		db = db.Where(map[string]interface{}{"deleted_at": nil})
+	}
+	tx := db.Limit(size).Offset(start).Find(data)
+	err = tx.Error
+	total, err = m.Count(ctx, wheres, isDelete)
 	return
 }
 
-//根据id查询
-func (a *{{.TableName}}) GetById() error {
-	return model.MainDB.Table(a.TableName()).Where("id=?", a.{{.ID}}).First(a).Error
+func (m *{{.TableName}}) GetById(ctx context.Context, IgnoreDel bool) error {
+	db := model.MainDB().Table(m.TableName()).WithContext(ctx)
+	if !IgnoreDel {
+		db = db.Unscoped()
+	}
+	return db.First(m).Error
 }
 
-//修改ById
-func (a *{{.TableName}}) UpdateById() error {
-	return model.MainDB.Table(a.TableName()).Where("id=?", a.{{.ID}}).Updates(a).Error
+func (m *{{.TableName}}) GetByWhere(ctx context.Context, wheres map[string][]interface{}) error {
+	db := model.MainDB().Table(m.TableName()).WithContext(ctx)
+	for s, i := range wheres {
+		db = db.Where(s, i...)
+	}
+	return db.First(m).Error
 }
 
-//软删除恢复
-func (a *{{.TableName}}) DelRes() error {
-	return model.MainDB.Table(a.TableName()).Where("id=?", a.{{.ID}}).Update("deleted_at", nil).Error
+func (m *{{.TableName}}) ExistWhere(ctx context.Context, wheres map[string][]interface{}) bool {
+	db := model.MainDB().Table(m.TableName()).WithContext(ctx)
+	for s, i := range wheres {
+		db = db.Where(s, i...)
+	}
+	first := db.First(m)
+	return first.RowsAffected != 0
 }
 
+func (m *{{.TableName}}) UpdatesWhere(ctx context.Context, wheres map[string][]interface{}) error {
+	db := model.MainDB().Table(m.TableName()).WithContext(ctx)
+	for s, i := range wheres {
+		db = db.Where(s, i...)
+	}
+	return db.Updates(m).Error
+}
+
+func (m *{{.TableName}}) UpdateWhere(ctx context.Context, wheres map[string][]interface{}, column string, value interface{}) error {
+	db := model.MainDB().Table(m.TableName()).WithContext(ctx)
+	for s, i := range wheres {
+		db = db.Where(s, i...)
+	}
+	return db.Update(column, value).Error
+}
+
+func (m *{{.TableName}}) UpdateStatus(ctx context.Context, status uint32) error {
+	return model.MainDB().Table(m.TableName()).WithContext(ctx).Where("id=?", m.{{.ID}}).Update("status", status).Error
+}
+
+func (m *{{.TableName}}) DelRes(ctx context.Context, wheres map[string][]interface{}) (count int64, err error) {
+	db := model.MainDB().Table(m.TableName()).WithContext(ctx)
+	for s, i := range wheres {
+		db = db.Where(s, i...)
+	}
+	tx := db.Update("deleted_at", nil)
+	err = tx.Error
+	count = tx.RowsAffected
+	return
+}
+
+func (m *{{.TableName}}) Count(ctx context.Context, wheres map[string][]interface{}, isDelete bool) (count int64, err error) {
+	db := MainDB().Table(m.TableName()).WithContext(ctx)
+	for s, i := range wheres {
+		db = db.Where(s, i...)
+	}
+	if isDelete {
+		db = db.Unscoped().Where("deleted_at is not null")
+	} else {
+		db = db.Where(map[string]interface{}{"deleted_at": nil})
+	}
+	tx := db.Count(&count)
+	return count, tx.Error
+}
