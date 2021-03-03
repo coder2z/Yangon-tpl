@@ -5,7 +5,7 @@ import (
 	"github.com/coder2m/component/pkg/xvalidator"
 	"{{.ProjectName}}/internal/{{.appName}}/error/httpError"
 	_map "{{.ProjectName}}/internal/{{.appName}}/map"
-	"{{.ProjectName}}/internal/{{.appName}}/server/{{.tableName}}"
+	"{{.ProjectName}}/internal/{{.appName}}/services/{{.tableName}}"
 	R "{{.ProjectName}}/pkg/response"
 )
 
@@ -21,7 +21,7 @@ func ({{.TableName}}) GetAll{{.TableName}}(ctx *gin.Context) {
 		R.HandleBadRequest(ctx, xvalidator.GetMsg(err))
 		return
 	}
-	if data, total, err := {{.tableName}}.GetAllServer(page); err != nil {
+	if data, total, err := {{.tableName}}.GetAllservices(page); err != nil {
 		R.Error(ctx, err.Error(), nil)
 	} else {
 		R.Ok(ctx, R.MSG_OK, R.Page(total, page.Page, page.PageSize, data))
@@ -30,7 +30,7 @@ func ({{.TableName}}) GetAll{{.TableName}}(ctx *gin.Context) {
 }
 
 func ({{.TableName}}) Post{{.TableName}}(ctx *gin.Context) {
-	var addMap _map.{{.TableName}}AddServer
+	var addMap _map.{{.TableName}}Addservices
 	if err := ctx.ShouldBind(&addMap); err != nil {
 		R.HandleBadRequest(ctx, nil)
 		return
@@ -39,7 +39,7 @@ func ({{.TableName}}) Post{{.TableName}}(ctx *gin.Context) {
 		R.HandleBadRequest(ctx, xvalidator.GetMsg(err))
 		return
 	}
-	if err := {{.tableName}}.AddServer(addMap); err != nil {
+	if err := {{.tableName}}.Addservices(addMap); err != nil {
 		R.Error(ctx, err.Error(), nil)
 		return
 	}
@@ -57,7 +57,7 @@ func ({{.TableName}}) Get{{.TableName}}(ctx *gin.Context) {
 		R.HandleBadRequest(ctx, xvalidator.GetMsg(err))
 		return
 	}
-	if data, err := {{.tableName}}.GetByIdServer(id); err != nil {
+	if data, err := {{.tableName}}.GetByIdservices(id); err != nil {
 		R.Error(ctx, err.Error(), nil)
 	} else {
 		R.Ok(ctx, R.MSG_OK, data)
@@ -66,7 +66,7 @@ func ({{.TableName}}) Get{{.TableName}}(ctx *gin.Context) {
 }
 
 func ({{.TableName}}) Put{{.TableName}}(ctx *gin.Context) {
-	var put _map.{{.TableName}}PutServer
+	var put _map.{{.TableName}}Putservices
 	if err := ctx.ShouldBind(&put); err != nil {
 		R.HandleBadRequest(ctx, nil)
 		return
@@ -75,7 +75,7 @@ func ({{.TableName}}) Put{{.TableName}}(ctx *gin.Context) {
 		R.HandleBadRequest(ctx, xvalidator.GetMsg(err))
 		return
 	}
-	if err := {{.tableName}}.PutByIdServer(put); err != nil {
+	if err := {{.tableName}}.PutByIdservices(put); err != nil {
 		R.Error(ctx, err.Error(), nil)
 	} else {
 		R.Ok(ctx, R.MSG_OK, nil)
@@ -93,7 +93,7 @@ func ({{.TableName}}) Del{{.TableName}}(ctx *gin.Context) {
 		R.HandleBadRequest(ctx, xvalidator.GetMsg(err))
 		return
 	}
-	if err := {{.tableName}}.DelServer(del); err != nil {
+	if err := {{.tableName}}.Delservices(del); err != nil {
 		R.Error(ctx, err.Error(), nil)
 	} else {
 		R.Ok(ctx, R.MSG_OK, nil)
@@ -111,7 +111,7 @@ func ({{.TableName}}) Rec{{.TableName}}(ctx *gin.Context) {
 		R.HandleBadRequest(ctx, xvalidator.GetMsg(err))
 		return
 	}
-	if err := {{.tableName}}.RecDelServer(recDel); err != nil {
+	if err := {{.tableName}}.RecDelservices(recDel); err != nil {
 		R.Error(ctx, err.Error(), nil)
 	} else {
 		R.Ok(ctx, R.MSG_OK, nil)
