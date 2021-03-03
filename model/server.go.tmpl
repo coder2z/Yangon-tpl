@@ -6,63 +6,63 @@ import (
 	"{{.ProjectName}}/internal/{{.appName}}/model/{{.tableName}}"
 )
 
-func GetAllServer(page _map.PageList) (data []{{.tableName}}.{{.TableName}}, total int64, err error) {
+func GetAllservices(page _map.PageList) (data []{{.tableName}}.{{.TableName}}, total int64, err error) {
 	data = make([]{{.tableName}}.{{.TableName}}, 0)
 	total, err = new({{.tableName}}.{{.TableName}}).Get(page.PageSize*(page.Page-1), page.PageSize, &data, nil, page.IsDelete)
 	if err != nil {
-		xlog.Errorw("{{.tableName}} GetAllServer", err.Error())
+		xlog.Errorw("{{.tableName}} GetAllservices", err.Error())
 	}
 	return
 }
 
-func AddServer(add _map.{{.TableName}}AddServer) (err error) {
+func Addservices(add _map.{{.TableName}}Addservices) (err error) {
 	//todo 添加手动赋值
 	data := &{{.tableName}}.{{.TableName}}{
 
 	}
 	err = data.Add()
 	if err != nil {
-		xlog.Errorw("{{.tableName}} AddServer", err.Error())
+		xlog.Errorw("{{.tableName}} Addservices", err.Error())
 	}
 	return
 }
 
-func GetByIdServer(idMap _map.IdMap) (data *{{.tableName}}.{{.TableName}}, err error) {
+func GetByIdservices(idMap _map.IdMap) (data *{{.tableName}}.{{.TableName}}, err error) {
 	data = new({{.tableName}}.{{.TableName}})
 	data.{{.Id}} = idMap.Id
 	err = data.GetById()
 	if err != nil {
-		xlog.Errorw("{{.tableName}} GetByIdServer", err.Error())
+		xlog.Errorw("{{.tableName}} GetByIdservices", err.Error())
 	}
 	return
 }
 
-func PutByIdServer(put _map.{{.TableName}}PutServer) (err error) {
+func PutByIdservices(put _map.{{.TableName}}Putservices) (err error) {
 	//todo 修改手动赋值
 	data := &{{.tableName}}.{{.TableName}}{
 
 	}
 	err = data.UpdateById()
 	if err != nil {
-		xlog.Errorw("{{.tableName}} PutByIdServer", err.Error())
+		xlog.Errorw("{{.tableName}} PutByIdservices", err.Error())
 	}
 	return
 }
 
-func DelServer(idMap _map.IdMap) (err error) {
+func Delservices(idMap _map.IdMap) (err error) {
 	err = new({{.tableName}}.{{.TableName}}).Del(map[string]interface{}{"{{.id}}=?": idMap.Id})
 	if err != nil {
-		xlog.Errorw("{{.tableName}} DelServer", err.Error())
+		xlog.Errorw("{{.tableName}} Delservices", err.Error())
 	}
 	return
 }
 
-func RecDelServer(idMap _map.IdMap) (err error) {
+func RecDelservices(idMap _map.IdMap) (err error) {
 	data := new({{.tableName}}.{{.TableName}})
 	data.{{.Id}} = idMap.Id
 	err = data.DelRes()
 	if err != nil {
-		xlog.Errorw("{{.tableName}} RecDelServer", err.Error())
+		xlog.Errorw("{{.tableName}} RecDelservices", err.Error())
 	}
 	return
 }
