@@ -4,16 +4,14 @@ go 1.15
 
 require (
 	github.com/BurntSushi/toml v0.3.1
+	github.com/coder2z/g-saber v1.0.1
+	github.com/coder2z/g-server v1.0.5
 	github.com/gin-gonic/gin v1.6.3
 	github.com/go-playground/validator/v10 v10.4.1
-	github.com/gorilla/websocket v1.4.2 // indirect
-	github.com/coder2z/g-server latest
-	github.com/coder2z/g-saber latest
-	github.com/spf13/pflag v1.0.3 // indirect
-	gorm.io/gorm v1.20.8
+	github.com/go-resty/resty/v2 v2.5.0
+	github.com/pkg/errors v0.9.1
+	google.golang.org/grpc v1.31.1
+	gorm.io/gorm v1.21.2
 )
 
-replace (
-	github.com/coreos/bbolt v1.3.5 => go.etcd.io/bbolt v1.3.5
-	google.golang.org/grpc => google.golang.org/grpc v1.26.0
-)
+replace google.golang.org/grpc => google.golang.org/grpc v1.29.0

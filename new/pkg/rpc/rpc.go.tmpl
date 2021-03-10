@@ -1,11 +1,13 @@
 package xrpc
 
 import (
+	"context"
 	"fmt"
-	xapp "github.com/coder2z/g-server"
 	"github.com/coder2z/g-saber/xdefer"
 	"github.com/coder2z/g-saber/xnet"
+	"github.com/coder2z/g-server/xapp"
 	"github.com/coder2z/g-server/xgrpc"
+	clientinterceptors "github.com/coder2z/g-server/xgrpc/client"
 	serverinterceptors "github.com/coder2z/g-server/xgrpc/server"
 	"github.com/coder2z/g-server/xregistry"
 	"github.com/coder2z/g-server/xregistry/xetcd"
@@ -14,21 +16,52 @@ import (
 	"time"
 )
 
-type Config struct {
-	EtcdAddr         string        `mapStructure:"etcd_addr"`
-	ServerIp         string        `mapStructure:"ip"`
-	ServerPort       int           `mapStructure:"port"`
-	RegisterTTL      time.Duration `mapStructure:"register_ttl"`
-	RegisterInterval time.Duration `mapStructure:"register_interval"`
-	Timeout          time.Duration `mapStructure:"timeout"`
+type (
+	ServerConfig struct {
+		EtcdAddr         string        `mapStructure:"etcd_addr"`
+		ServerIp         string        `mapStructure:"ip"`
+		ServerPort       int           `mapStructure:"port"`
+		RegisterTTL      time.Duration `mapStructure:"register_ttl"`
+		RegisterInterval time.Duration `mapStructure:"register_interval"`
+		Timeout          time.Duration `mapStructure:"timeout"`
+	}
+
+	ClientConfig struct {
+		Timeout                       time.Duration `mapStructure:"timeout"`
+		SlowThreshold                 time.Duration `mapStructure:"slow_threshold"`
+		HystrixTimeout                int           `mapStructure:"hystrix_timeout"`
+		HystrixMaxConcurrentRequests  int           `mapStructure:"max_concurrent_requests"`
+		HystrixRequestVolumeThreshold int           `mapStructure:"request_volume_threshold"`
+		HystrixSleepWindow            int           `mapStructure:"sleep_window"`
+		HystrixErrorPercentThreshold  int           `mapStructure:"error_percent_threshold"`
+		HystrixFallback               func(context.Context, error) error
+	}
+)
+
+func DefaultClientConfig() *ClientConfig {
+	return &ClientConfig{
+		Timeout:                       30 * time.Second,
+		SlowThreshold:                 20 * time.Second,
+		HystrixTimeout:                1000,
+		HystrixMaxConcurrentRequests:  100,
+		HystrixRequestVolumeThreshold: 20,
+		HystrixSleepWindow:            50,
+		HystrixErrorPercentThreshold:  5000,
+		HystrixFallback:               nil,
+	}
 }
 
-func DefaultConfig() *Config {
+func (c *ClientConfig) WithHystrixFallback(f func(context.Context, error) error) *ClientConfig {
+	c.HystrixFallback = f
+	return c
+}
+
+func DefaultServerConfig() *ServerConfig {
 	host, port, err := xnet.GetLocalMainIP()
 	if err != nil {
 		host = "localhost"
 	}
-	return &Config{
+	return &ServerConfig{
 		EtcdAddr:         "127.0.0.1:2379",
 		ServerIp:         host,
 		ServerPort:       port,
@@ -38,11 +71,11 @@ func DefaultConfig() *Config {
 	}
 }
 
-func (c Config) Addr() string {
+func (c ServerConfig) Addr() string {
 	return fmt.Sprintf("%v:%v", c.ServerIp, c.ServerPort)
 }
 
-func DefaultOption(c *Config) []grpc.ServerOption {
+func DefaultOptionServer(c *ServerConfig) []grpc.ServerOption {
 	return []grpc.ServerOption{
 		xgrpc.WithUnaryServerInterceptors(
 			serverinterceptors.CrashUnaryServerInterceptor(),
@@ -57,7 +90,38 @@ func DefaultOption(c *Config) []grpc.ServerOption {
 	}
 }
 
-func DefaultRegistryEtcd(c *Config) (err error) {
+func DefaultOptionClient(c *ClientConfig) []grpc.DialOption {
+	return []grpc.DialOption{
+		xgrpc.WithUnaryClientInterceptors(
+			clientinterceptors.XTimeoutUnaryClientInterceptor(c.Timeout, c.SlowThreshold),
+			clientinterceptors.XAidUnaryClientInterceptor(),
+			clientinterceptors.XLoggerUnaryClientInterceptor(xapp.Name()),
+			clientinterceptors.HystrixUnaryClientIntercept(
+				c.HystrixTimeout,
+				c.HystrixMaxConcurrentRequests,
+				c.HystrixRequestVolumeThreshold,
+				c.HystrixErrorPercentThreshold,
+				c.HystrixSleepWindow,
+				c.HystrixFallback,
+			),
+			clientinterceptors.PrometheusUnaryClientInterceptor(xapp.Name()),
+			clientinterceptors.XTraceUnaryClientInterceptor(),
+		),
+		xgrpc.WithStreamClientInterceptors(
+			clientinterceptors.PrometheusStreamClientInterceptor(xapp.Name()),
+			clientinterceptors.HystrixStreamClientInterceptor(
+				c.HystrixTimeout,
+				c.HystrixMaxConcurrentRequests,
+				c.HystrixRequestVolumeThreshold,
+				c.HystrixErrorPercentThreshold,
+				c.HystrixSleepWindow,
+				c.HystrixFallback,
+			),
+		),
+	}
+}
+
+func DefaultRegistryEtcd(c *ServerConfig) (err error) {
 	var etcdR xregistry.Registry
 	conf := xetcd.EtcdV3Cfg{
 		Endpoints: []string{c.EtcdAddr},
