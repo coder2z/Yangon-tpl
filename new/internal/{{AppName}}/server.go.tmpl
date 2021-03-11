@@ -53,8 +53,8 @@ func (s *Server) Run(stopCh <-chan struct{}) (err error) {
 		return s.Server.Shutdown(ctx)
 	})
 	xconsole.Greenf("Start listening on:", s.Server.Addr)
-	if err = s.Server.ListenAndServe(); err != http.ErrServerClosed {
-		return err
+	if err = s.Server.ListenAndServe(); err == http.ErrServerClosed {
+		return nil
 	}
 	s.Wait()
 	return err
