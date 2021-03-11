@@ -1,68 +1,67 @@
 package {{.tableName}}
 
 import (
+	"context"
 	"github.com/coder2z/g-saber/xlog"
 	_map "github.com/coder2z/{{.ProjectName}}/internal/{{.appName}}/map"
 	"github.com/coder2z/{{.ProjectName}}/internal/{{.appName}}/model/{{.tableName}}"
 )
 
-func GetAllservices(page _map.PageList) (data []{{.tableName}}.{{.TableName}}, total int64, err error) {
+func GetAllServices(ctx context.Context,page _map.PageList) (data []{{.tableName}}.{{.TableName}}, total int64, err error) {
 	data = make([]{{.tableName}}.{{.TableName}}, 0)
-	total, err = new({{.tableName}}.{{.TableName}}).Get(page.PageSize*(page.Page-1), page.PageSize, &data, nil, page.IsDelete)
+	total, err = new({{.tableName}}.{{.TableName}}).Get(ctx,page.PageSize*(page.Page-1), page.PageSize, &data, nil, page.IsDelete)
 	if err != nil {
 		xlog.Errorw("{{.tableName}} GetAllservices", err.Error())
 	}
 	return
 }
 
-func Addservices(add _map.{{.TableName}}Addservices) (err error) {
+func AddServices(ctx context.Context,add _map.{{.TableName}}AddServices) (err error) {
 	//todo 添加手动赋值
 	data := &{{.tableName}}.{{.TableName}}{
 
 	}
-	err = data.Add()
+	err = data.Add(ctx)
 	if err != nil {
-		xlog.Errorw("{{.tableName}} Addservices", err.Error())
+		xlog.Errorw("{{.tableName}} AddServices", err.Error())
 	}
 	return
 }
 
-func GetByIdservices(idMap _map.IdMap) (data *{{.tableName}}.{{.TableName}}, err error) {
+func GetByIdServices(ctx context.Context,idMap _map.IdMap) (data *{{.tableName}}.{{.TableName}}, err error) {
 	data = new({{.tableName}}.{{.TableName}})
 	data.{{.Id}} = idMap.Id
-	err = data.GetById()
+	err = data.GetById(ctx,true)
 	if err != nil {
 		xlog.Errorw("{{.tableName}} GetByIdservices", err.Error())
 	}
 	return
 }
 
-func PutByIdservices(put _map.{{.TableName}}Putservices) (err error) {
+func PutByIdServices(ctx context.Context,put _map.{{.TableName}}PutServices) (err error) {
 	//todo 修改手动赋值
 	data := &{{.tableName}}.{{.TableName}}{
 
 	}
-	err = data.UpdateById()
+	err = data.UpdatesWhere(ctx, map[string][]interface{}{"{{.id}}=?": {put.Id}})
 	if err != nil {
-		xlog.Errorw("{{.tableName}} PutByIdservices", err.Error())
+		xlog.Errorw("{{.tableName}} PutByIdServices", err.Error())
 	}
 	return
 }
 
-func Delservices(idMap _map.IdMap) (err error) {
-	err = new({{.tableName}}.{{.TableName}}).Del(map[string]interface{}{"{{.id}}=?": idMap.Id})
+func DelServices(ctx context.Context,idMap _map.IdMap) (err error) {
+	err = new({{.tableName}}.{{.TableName}}).Del(ctx, map[string][]interface{}{"{{.id}}=?": {idMap.Id}})
 	if err != nil {
-		xlog.Errorw("{{.tableName}} Delservices", err.Error())
+		xlog.Errorw("{{.tableName}} DelServices", err.Error())
 	}
 	return
 }
 
-func RecDelservices(idMap _map.IdMap) (err error) {
-	data := new({{.tableName}}.{{.TableName}})
-	data.{{.Id}} = idMap.Id
-	err = data.DelRes()
+func RecDelServices(ctx context.Context,idMap _map.IdMap) (err error) {
+	err = new({{.tableName}}.{{.TableName}}).DelRes(ctx, map[string][]interface{}{"{{.id}}=?": {idMap.Id}})
 	if err != nil {
-		xlog.Errorw("{{.tableName}} RecDelservices", err.Error())
+		xlog.Errorw("{{.tableName}} RecDelServices", err.Error())
 	}
 	return
 }
