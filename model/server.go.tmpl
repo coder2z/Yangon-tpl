@@ -2,8 +2,8 @@ package {{.tableName}}
 
 import (
 	"github.com/coder2z/g-saber/xlog"
-	_map "{{.ProjectName}}/internal/{{.appName}}/map"
-	"{{.ProjectName}}/internal/{{.appName}}/model/{{.tableName}}"
+	_map "github.com/coder2z/{{.ProjectName}}/internal/{{.appName}}/map"
+	"github.com/coder2z/{{.ProjectName}}/internal/{{.appName}}/model/{{.tableName}}"
 )
 
 func GetAllservices(page _map.PageList) (data []{{.tableName}}.{{.TableName}}, total int64, err error) {
