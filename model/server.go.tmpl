@@ -51,7 +51,7 @@ func PutByIdServices(ctx context.Context,put _map.{{.TableName}}PutServices) (er
 }
 
 func DelServices(ctx context.Context,idMap _map.IdMap) (err error) {
-	err = new({{.tableName}}.{{.TableName}}).Del(ctx, map[string][]interface{}{"{{.id}}=?": {idMap.Id}})
+	_,err = new({{.tableName}}.{{.TableName}}).Del(ctx, map[string][]interface{}{"{{.id}}=?": {idMap.Id}})
 	if err != nil {
 		xlog.Errorw("{{.tableName}} DelServices", err.Error())
 	}
@@ -59,7 +59,7 @@ func DelServices(ctx context.Context,idMap _map.IdMap) (err error) {
 }
 
 func RecDelServices(ctx context.Context,idMap _map.IdMap) (err error) {
-	err = new({{.tableName}}.{{.TableName}}).DelRes(ctx, map[string][]interface{}{"{{.id}}=?": {idMap.Id}})
+	_,err = new({{.tableName}}.{{.TableName}}).DelRes(ctx, map[string][]interface{}{"{{.id}}=?": {idMap.Id}})
 	if err != nil {
 		xlog.Errorw("{{.tableName}} RecDelServices", err.Error())
 	}
