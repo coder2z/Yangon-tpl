@@ -2,7 +2,7 @@ package app
 
 import (
 	"github.com/coder2z/{{.ProjectName}}/cmd"
-	s "github.com/coder2z/{{.ProjectName}}/internal/{{.AppName}}"
+	"github.com/coder2z/{{.ProjectName}}/internal"
 	"sync"
 )
 
@@ -15,6 +15,6 @@ func Run(stopCh <-chan struct{}) error {
 	return server.Run(stopCh)
 }
 
-func NewServer() cmd.App {
-	return new(s.Server)
+func NewServer() internal.Server {
+	return internal.Server{}
 }

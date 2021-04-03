@@ -1,0 +1,14 @@
+.PHONY: build-image
+build-image: build-{{.ProjectName}}-server
+
+.PHONY: build-{{.ProjectName}}-server
+build-{{.ProjectName}}-server:
+	docker build -f build/Dockerfile -t {{.ProjectName}}-{{.AppName}}:v1 .
+
+.PHONY: run-{{.ProjectName}}
+run-{{.ProjectName}}:
+	go run cmd/main.go run -c=config/confin.toml
+
+.PHONY: build-{{.ProjectName}}
+build-{{.ProjectName}}:
+	go build -o  cmd/{{.AppName}} cmd/main.go

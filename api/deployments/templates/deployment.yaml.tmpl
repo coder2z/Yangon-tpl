@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: k8s-{{.ProjectName}}
+  namespace: {{.ProjectName}}
+spec:
+  selector:
+    matchLabels:
+      name: {{.ProjectName}}
+      version: v1
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        name: {{.ProjectName}}
+        version: v1
+    spec:
+      containers:
+      - name: {{.ProjectName}}
+        image: "{{`{{index .Values.images 0}}`}}:{{`{{.Values.version}}`}}"
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 80
