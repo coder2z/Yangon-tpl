@@ -10,9 +10,12 @@ import (
 )
 
 func main() {
-	xflag.NewRootCommand(&xflag.Command{
-		Use:                "{{.AppName}}",
-		DisableSuggestions: false,
+	xflag.NewRootCommand(&xflag.CommandNode{
+		Name: "{{.AppName}}",
+		Command: &xflag.Command{
+			Use:                "{{.AppName}}",
+			DisableSuggestions: false,
+		},
 	})
 	xflag.Register(
 		xflag.CommandNode{
