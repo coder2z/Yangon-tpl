@@ -1,0 +1,119 @@
+package handle
+
+import (
+	"github.com/coder2z/g-saber/xvalidator"
+	_map "github.com/coder2z/{{.ProjectName}}/internal/map"
+	"github.com/coder2z/{{.ProjectName}}/internal/services/{{.tableName}}"
+	R "github.com/coder2z/{{.ProjectName}}/pkg/response"
+	"github.com/gin-gonic/gin"
+)
+
+type {{.TableName}} struct{}
+
+func ({{.TableName}}) GetAll{{.TableName}}(ctx *gin.Context) {
+	var page = _map.DefaultPageRequest
+	if err := ctx.ShouldBind(&page); err != nil {
+		R.HandleBadRequest(ctx, nil)
+		return
+	}
+	if err := xvalidator.Struct(page); err != nil {
+		R.HandleBadRequest(ctx, xvalidator.GetMsg(err))
+		return
+	}
+	if data, total, err := {{.tableName}}.GetAllServices(ctx,page); err != nil {
+		R.Error(ctx, err.Error(), nil)
+	} else {
+		R.Ok(ctx, R.MSG_OK, R.Page(total, page.Page, page.PageSize, data))
+	}
+	return
+}
+
+func ({{.TableName}}) Post{{.TableName}}(ctx *gin.Context) {
+	var addMap _map.{{.TableName}}AddServices
+	if err := ctx.ShouldBind(&addMap); err != nil {
+		R.HandleBadRequest(ctx, nil)
+		return
+	}
+	if err := xvalidator.Struct(addMap); err != nil {
+		R.HandleBadRequest(ctx, xvalidator.GetMsg(err))
+		return
+	}
+	if err := {{.tableName}}.AddServices(ctx,addMap); err != nil {
+		R.Error(ctx, err.Error(), nil)
+		return
+	}
+	R.Ok(ctx, R.MSG_OK, nil)
+	return
+}
+
+func ({{.TableName}}) Get{{.TableName}}(ctx *gin.Context) {
+	var id _map.IdMap
+	if err := ctx.ShouldBindUri(&id); err != nil {
+		R.HandleBadRequest(ctx, nil)
+		return
+	}
+	if err := xvalidator.Struct(id); err != nil {
+		R.HandleBadRequest(ctx, xvalidator.GetMsg(err))
+		return
+	}
+	if data, err := {{.tableName}}.GetByIdServices(ctx,id); err != nil {
+		R.Error(ctx, err.Error(), nil)
+	} else {
+		R.Ok(ctx, R.MSG_OK, data)
+	}
+	return
+}
+
+func ({{.TableName}}) Put{{.TableName}}(ctx *gin.Context) {
+	var put _map.{{.TableName}}PutServices
+	if err := ctx.ShouldBind(&put); err != nil {
+		R.HandleBadRequest(ctx, nil)
+		return
+	}
+	if err := xvalidator.Struct(put); err != nil {
+		R.HandleBadRequest(ctx, xvalidator.GetMsg(err))
+		return
+	}
+	if err := {{.tableName}}.PutByIdServices(ctx,put); err != nil {
+		R.Error(ctx, err.Error(), nil)
+	} else {
+		R.Ok(ctx, R.MSG_OK, nil)
+	}
+	return
+}
+
+func ({{.TableName}}) Del{{.TableName}}(ctx *gin.Context) {
+	var del _map.IdMap
+	if err := ctx.ShouldBind(&del); err != nil {
+		R.HandleBadRequest(ctx, nil)
+		return
+	}
+	if err := xvalidator.Struct(del); err != nil {
+		R.HandleBadRequest(ctx, xvalidator.GetMsg(err))
+		return
+	}
+	if err := {{.tableName}}.DelServices(ctx,del); err != nil {
+		R.Error(ctx, err.Error(), nil)
+	} else {
+		R.Ok(ctx, R.MSG_OK, nil)
+	}
+	return
+}
+
+func ({{.TableName}}) Rec{{.TableName}}(ctx *gin.Context) {
+	var recDel _map.IdMap
+	if err := ctx.ShouldBind(&recDel); err != nil {
+		R.HandleBadRequest(ctx, nil)
+		return
+	}
+	if err := xvalidator.Struct(recDel); err != nil {
+		R.HandleBadRequest(ctx, xvalidator.GetMsg(err))
+		return
+	}
+	if err := {{.tableName}}.RecDelServices(ctx,recDel); err != nil {
+		R.Error(ctx, err.Error(), nil)
+	} else {
+		R.Ok(ctx, R.MSG_OK, nil)
+	}
+	return
+}

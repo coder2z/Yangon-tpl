@@ -1,0 +1,16 @@
+package registry
+
+import "github.com/coder2z/{{.ProjectName}}/internal/api/{{.version}}/handle"
+
+func init() {
+	{{.version}} := Engine().Group("/api/{{.version}}")
+	{
+		{{.tableName}} := new(handle.{{.TableName}})
+		{{.version}}.GET("/{{.tableName}}", {{.tableName}}.GetAll{{.TableName}})
+		{{.version}}.GET("/{{.tableName}}/:id", {{.tableName}}.Get{{.TableName}})
+		{{.version}}.POST("/{{.tableName}}", {{.tableName}}.Post{{.TableName}})
+		{{.version}}.PUT("/{{.tableName}}/:id", {{.tableName}}.Put{{.TableName}})
+		{{.version}}.DELETE("/{{.tableName}}/:id", {{.tableName}}.Del{{.TableName}})
+		{{.version}}.PATCH("/{{.tableName}}/:id/rec", {{.tableName}}.Rec{{.TableName}})
+	}
+}
