@@ -3,7 +3,7 @@ build-image: build-{{.ProjectName}}-server
 
 .PHONY: build-{{.ProjectName}}-server
 build-{{.ProjectName}}-server:
-	docker build -f build/Dockerfile -t {{.ProjectName}}-{{.AppName}}:v1 .
+	docker build -f build/Dockerfile -t {{.ProjectName}}:v1 .
 
 .PHONY: run-{{.ProjectName}}
 run-{{.ProjectName}}:
@@ -11,4 +11,4 @@ run-{{.ProjectName}}:
 
 .PHONY: build-{{.ProjectName}}
 build-{{.ProjectName}}:
-	go build -o  cmd/{{.AppName}} cmd/main.go
+	go build -o  cmd/{{.ProjectName}} cmd/main.go
