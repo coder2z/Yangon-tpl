@@ -7,7 +7,7 @@ build-{{.AppName}}-server:
 
 .PHONY: run-{{.AppName}}
 run-{{.AppName}}:
-	go run cmd/{{.AppName}}/main.go run -c=config/confin.toml
+	go run cmd/{{.AppName}}/main.go run -c=config/config.toml
 
 .PHONY: build-{{.AppName}}
 build-{{.AppName}}:
