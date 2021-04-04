@@ -6,6 +6,7 @@ import (
 	"github.com/coder2z/g-server/xapp"
 	"github.com/coder2z/g-saber/xconsole"
 	"github.com/coder2z/g-saber/xflag"
+	"github.com/coder2z/g-saber/xnet"
 	"github.com/coder2z/g-saber/xdefer"
 	"github.com/coder2z/g-saber/xvalidator"
 	"github.com/coder2z/g-saber/xcfg"
@@ -95,8 +96,23 @@ func (s *Server) initHttpServer() {
 	if s.err != nil {
 		return
 	}
+	type config struct {
+		Ip   string
+		Port int
+	}
+
 	s.Server = new(http.Server)
-	s.Server.Addr = xcfg.GetString("server.addr")
+	host, port, err := xnet.GetLocalMainIP()
+	if err != nil {
+		host = "localhost"
+	}
+
+	cfg := &config{
+		Ip:   host,
+		Port: port,
+	}
+	cfg = xcfg.UnmarshalWithExpect("server", cfg).(*config)
+	s.Server.Addr = fmt.Sprintf("%s:%d", cfg.Ip, cfg.Port)
 }
 
 func (s *Server) initRouter() {
