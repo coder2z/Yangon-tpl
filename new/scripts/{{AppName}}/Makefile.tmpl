@@ -11,4 +11,4 @@ run-{{.AppName}}:
 
 .PHONY: build-{{.AppName}}
 build-{{.AppName}}:
-	go build -o  cmd/{{.AppName}}/{{.AppName}} cmd/{{.AppName}}/main.go
+	go build -o  cmd/{{.AppName}}/{{.AppName}} -ldflags "-X github.com/coder2z/g-server/xapp.appName={{.ProjectName}}_{{.AppName}}  -X github.com/coder2z/g-server/xapp.buildAppVersion=v1.0 -X github.com/coder2z/g-server/xapp.buildHost=`hostname`" cmd/{{.AppName}}/main.go
