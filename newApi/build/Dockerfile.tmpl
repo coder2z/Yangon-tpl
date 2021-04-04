@@ -7,7 +7,7 @@ COPY go.mod .
 COPY go.sum .
 RUN go mod download
 COPY . /app
-RUN CGO_ENABLED=0 go build -o  dist/{{.ProjectName}} -a -ldflags "-w -s" ./cmd
+RUN CGO_ENABLED=0 go build -o  dist/{{.ProjectName}} -a -ldflags "-w -s -X github.com/coder2z/g-server/xapp.appName={{.ProjectName}} -X github.com/coder2z/g-server/xapp.buildAppVersion=v1.0.1 -X github.com/coder2z/g-server/xapp.buildHost=`hostname`" ./cmd
 
 FROM alpine:3.10
 
