@@ -13,6 +13,7 @@ import (
 	"github.com/coder2z/g-server/datasource/manager"
 	"github.com/coder2z/g-server/xinvoker"
 	"github.com/coder2z/g-server/xgovern"
+	"github.com/coder2z/g-server/xtrace"
 	xgorm "github.com/coder2z/g-server/xinvoker/gorm"
 	"github.com/coder2z/{{.ProjectName}}/internal/{{.AppName}}/api/v1/registry"
 	myValidator "github.com/coder2z/{{.ProjectName}}/internal/{{.AppName}}/validator"
@@ -133,6 +134,7 @@ func (s *Server) govern() {
 	if s.err != nil {
 		return
 	}
+	xtrace.JaegerBuild("trace.jaeger")
 	go xgovern.Run()
 }
 

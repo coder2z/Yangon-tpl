@@ -3,11 +3,6 @@
     port=1234
     locale = "zh"
 
-[app]
-    name="{{.ProjectName}}"
-    debug= true
-    version="v0.1.0"
-
 [mysql.main]
     tablePrefix = "{{.ProjectName}}"
     host = "127.0.0.1"
@@ -15,14 +10,22 @@
     password = "root"
     dbName = "{{.ProjectName}}"
     type = "mysql"
+    port = "3306"
     debug = true
 
-[rpc]
-    etcd_addr="127.0.0.1:2380"
-    ip="0.0.0.0"
-    port=8484
-    register_ttl="10s"
-    register_interval="3s"
+[redis.main]
+    addr = "127.0.0.1:6379"
+
+[email.main]
+    host = "smtp.yeah.net"
+    port = 465
+    username = ""
+    password = ""
+
+[sms.main]
+    area = "cn-hangzhou"
+    accessKeyId = ""
+    accessSecret = ""
 
 [xlog]
     name = "{{.ProjectName}}.log"
@@ -37,3 +40,6 @@
     host = "127.0.0.1"
     port = 4569
 
+[trace.jaeger]
+    [trace.jaeger.reporter]
+        localAgentHostPort = "127.0.0.1:6831"
