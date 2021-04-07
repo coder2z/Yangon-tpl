@@ -146,9 +146,8 @@ func (s *Server) rpc() {
 		rpcCfg *xrpc.ServerConfig
 		lis    net.Listener
 	)
-	rpcCfg = xcfg.UnmarshalWithExpect("rpc", xrpc.DefaultServerConfig()).(*xrpc.ServerConfig)
-
-	s.err = xrpc.DefaultRegistryEtcd(rpcCfg)
+	grpcCfg = xrpc.GRPCServerCfgBuild("rpc")
+	s.err = xrpc.DefaultRegistryEtcd(grpcCfg)
 	if s.err != nil {
 		return
 	}
@@ -159,13 +158,13 @@ func (s *Server) rpc() {
 	}
 
 	serve := grpc.NewServer(xrpc.DefaultOptionServer(rpcCfg)...)
+	go func() {
+		s.err = serve.Serve(lis)
+	}()
 	xdefer.Register(func() error {
     	serve.Stop()
     	xconsole.Red("grpc server shutdown success ")
     	return nil
     })
-	go func() {
-		s.err = serve.Serve(lis)
-	}()
 	xconsole.Greenf("grpc server start up success:", rpcCfg.Addr())
 }
