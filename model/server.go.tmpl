@@ -26,7 +26,7 @@ func AddServices(ctx context.Context,add _map.{{.TableName}}AddServices) (err er
 	data := &{{.tableName}}.{{.TableName}}{
 
 	}
-	err = data.Add(ctx)
+	err = data.Add(c)
 	if err != nil {
 		xlog.Errorw("{{.tableName}} AddServices", err.Error())
 	}
