@@ -1,6 +1,7 @@
 package handle
 
 import (
+	"github.com/coder2z/g-server/xtrace"
 	"github.com/coder2z/g-saber/xvalidator"
 	_map "github.com/coder2z/{{.ProjectName}}/internal/map"
 	"github.com/coder2z/{{.ProjectName}}/internal/services/{{.tableName}}"
@@ -11,6 +12,8 @@ import (
 type {{.TableName}} struct{}
 
 func ({{.TableName}}) GetAll{{.TableName}}(ctx *gin.Context) {
+	span, context := xtrace.StartSpanFromContext(ctx.Request.Context(), "GetAll{{.TableName}} handle")
+	defer span.Finish()
 	var page = _map.DefaultPageRequest
 	if err := ctx.ShouldBind(&page); err != nil {
 		R.HandleBadRequest(ctx, nil)
@@ -20,7 +23,7 @@ func ({{.TableName}}) GetAll{{.TableName}}(ctx *gin.Context) {
 		R.HandleBadRequest(ctx, xvalidator.GetMsg(err))
 		return
 	}
-	if data, total, err := {{.tableName}}.GetAllServices(ctx,page); err != nil {
+	if data, total, err := {{.tableName}}.GetAllServices(context,page); err != nil {
 		R.Error(ctx, err.Error(), nil)
 	} else {
 		R.Ok(ctx, R.MSG_OK, R.Page(total, page.Page, page.PageSize, data))
@@ -29,6 +32,8 @@ func ({{.TableName}}) GetAll{{.TableName}}(ctx *gin.Context) {
 }
 
 func ({{.TableName}}) Post{{.TableName}}(ctx *gin.Context) {
+	span, context := xtrace.StartSpanFromContext(ctx.Request.Context(), "Post{{.TableName}} handle")
+	defer span.Finish()
 	var addMap _map.{{.TableName}}AddServices
 	if err := ctx.ShouldBind(&addMap); err != nil {
 		R.HandleBadRequest(ctx, nil)
@@ -38,7 +43,7 @@ func ({{.TableName}}) Post{{.TableName}}(ctx *gin.Context) {
 		R.HandleBadRequest(ctx, xvalidator.GetMsg(err))
 		return
 	}
-	if err := {{.tableName}}.AddServices(ctx,addMap); err != nil {
+	if err := {{.tableName}}.AddServices(context,addMap); err != nil {
 		R.Error(ctx, err.Error(), nil)
 		return
 	}
@@ -47,6 +52,8 @@ func ({{.TableName}}) Post{{.TableName}}(ctx *gin.Context) {
 }
 
 func ({{.TableName}}) Get{{.TableName}}(ctx *gin.Context) {
+	span, context := xtrace.StartSpanFromContext(ctx.Request.Context(), "Get{{.TableName}} handle")
+	defer span.Finish()
 	var id _map.IdMap
 	if err := ctx.ShouldBindUri(&id); err != nil {
 		R.HandleBadRequest(ctx, nil)
@@ -56,7 +63,7 @@ func ({{.TableName}}) Get{{.TableName}}(ctx *gin.Context) {
 		R.HandleBadRequest(ctx, xvalidator.GetMsg(err))
 		return
 	}
-	if data, err := {{.tableName}}.GetByIdServices(ctx,id); err != nil {
+	if data, err := {{.tableName}}.GetByIdServices(context,id); err != nil {
 		R.Error(ctx, err.Error(), nil)
 	} else {
 		R.Ok(ctx, R.MSG_OK, data)
@@ -65,6 +72,8 @@ func ({{.TableName}}) Get{{.TableName}}(ctx *gin.Context) {
 }
 
 func ({{.TableName}}) Put{{.TableName}}(ctx *gin.Context) {
+	span, context := xtrace.StartSpanFromContext(ctx.Request.Context(), "Put{{.TableName}} handle")
+	defer span.Finish()
 	var put _map.{{.TableName}}PutServices
 	if err := ctx.ShouldBind(&put); err != nil {
 		R.HandleBadRequest(ctx, nil)
@@ -74,7 +83,7 @@ func ({{.TableName}}) Put{{.TableName}}(ctx *gin.Context) {
 		R.HandleBadRequest(ctx, xvalidator.GetMsg(err))
 		return
 	}
-	if err := {{.tableName}}.PutByIdServices(ctx,put); err != nil {
+	if err := {{.tableName}}.PutByIdServices(context,put); err != nil {
 		R.Error(ctx, err.Error(), nil)
 	} else {
 		R.Ok(ctx, R.MSG_OK, nil)
@@ -83,6 +92,8 @@ func ({{.TableName}}) Put{{.TableName}}(ctx *gin.Context) {
 }
 
 func ({{.TableName}}) Del{{.TableName}}(ctx *gin.Context) {
+	span, context := xtrace.StartSpanFromContext(ctx.Request.Context(), "Del{{.TableName}} handle")
+	defer span.Finish()
 	var del _map.IdMap
 	if err := ctx.ShouldBind(&del); err != nil {
 		R.HandleBadRequest(ctx, nil)
@@ -92,7 +103,7 @@ func ({{.TableName}}) Del{{.TableName}}(ctx *gin.Context) {
 		R.HandleBadRequest(ctx, xvalidator.GetMsg(err))
 		return
 	}
-	if err := {{.tableName}}.DelServices(ctx,del); err != nil {
+	if err := {{.tableName}}.DelServices(context,del); err != nil {
 		R.Error(ctx, err.Error(), nil)
 	} else {
 		R.Ok(ctx, R.MSG_OK, nil)
@@ -101,6 +112,8 @@ func ({{.TableName}}) Del{{.TableName}}(ctx *gin.Context) {
 }
 
 func ({{.TableName}}) Rec{{.TableName}}(ctx *gin.Context) {
+	span, context := xtrace.StartSpanFromContext(ctx.Request.Context(), "Rec{{.TableName}} handle")
+	defer span.Finish()
 	var recDel _map.IdMap
 	if err := ctx.ShouldBind(&recDel); err != nil {
 		R.HandleBadRequest(ctx, nil)
@@ -110,7 +123,7 @@ func ({{.TableName}}) Rec{{.TableName}}(ctx *gin.Context) {
 		R.HandleBadRequest(ctx, xvalidator.GetMsg(err))
 		return
 	}
-	if err := {{.tableName}}.RecDelServices(ctx,recDel); err != nil {
+	if err := {{.tableName}}.RecDelServices(context,recDel); err != nil {
 		R.Error(ctx, err.Error(), nil)
 	} else {
 		R.Ok(ctx, R.MSG_OK, nil)

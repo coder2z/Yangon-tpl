@@ -2,14 +2,17 @@ package {{.tableName}}
 
 import (
 	"context"
+	"github.com/coder2z/g-server/xtrace"
 	"github.com/coder2z/g-saber/xlog"
 	_map "github.com/coder2z/{{.ProjectName}}/internal/{{.appName}}/map"
 	"github.com/coder2z/{{.ProjectName}}/internal/{{.appName}}/model/{{.tableName}}"
 )
 
 func GetAllServices(ctx context.Context,page _map.PageList) (data []{{.tableName}}.{{.TableName}}, total int64, err error) {
+	span, c := xtrace.StartSpanFromContext(ctx, "{{.TableName}} GetAllServices Service")
+	defer span.Finish()
 	data = make([]{{.tableName}}.{{.TableName}}, 0)
-	total, err = new({{.tableName}}.{{.TableName}}).Get(ctx,page.PageSize*(page.Page-1), page.PageSize, &data, nil, page.IsDelete)
+	total, err = new({{.tableName}}.{{.TableName}}).Get(c,page.PageSize*(page.Page-1), page.PageSize, &data, nil, page.IsDelete)
 	if err != nil {
 		xlog.Errorw("{{.tableName}} GetAllservices", err.Error())
 	}
@@ -17,6 +20,8 @@ func GetAllServices(ctx context.Context,page _map.PageList) (data []{{.tableName
 }
 
 func AddServices(ctx context.Context,add _map.{{.TableName}}AddServices) (err error) {
+	span, c := xtrace.StartSpanFromContext(ctx, "{{.TableName}} AddServices Service")
+	defer span.Finish()
 	//todo 添加手动赋值
 	data := &{{.tableName}}.{{.TableName}}{
 
@@ -29,9 +34,11 @@ func AddServices(ctx context.Context,add _map.{{.TableName}}AddServices) (err er
 }
 
 func GetByIdServices(ctx context.Context,idMap _map.IdMap) (data *{{.tableName}}.{{.TableName}}, err error) {
+	span, c := xtrace.StartSpanFromContext(ctx, "{{.TableName}} GetByIdServices Service")
+	defer span.Finish()
 	data = new({{.tableName}}.{{.TableName}})
 	data.{{.Id}} = idMap.Id
-	err = data.GetById(ctx,true)
+	err = data.GetById(c,true)
 	if err != nil {
 		xlog.Errorw("{{.tableName}} GetByIdservices", err.Error())
 	}
@@ -39,11 +46,13 @@ func GetByIdServices(ctx context.Context,idMap _map.IdMap) (data *{{.tableName}}
 }
 
 func PutByIdServices(ctx context.Context,put _map.{{.TableName}}PutServices) (err error) {
+	span, c := xtrace.StartSpanFromContext(ctx, "{{.TableName}} PutByIdServices Service")
+	defer span.Finish()
 	//todo 修改手动赋值
 	data := &{{.tableName}}.{{.TableName}}{
 
 	}
-	err = data.UpdatesWhere(ctx, map[string][]interface{}{"{{.id}}=?": {put.Id}})
+	err = data.UpdatesWhere(c, map[string][]interface{}{"{{.id}}=?": {put.Id}})
 	if err != nil {
 		xlog.Errorw("{{.tableName}} PutByIdServices", err.Error())
 	}
@@ -51,7 +60,9 @@ func PutByIdServices(ctx context.Context,put _map.{{.TableName}}PutServices) (er
 }
 
 func DelServices(ctx context.Context,idMap _map.IdMap) (err error) {
-	_,err = new({{.tableName}}.{{.TableName}}).Del(ctx, map[string][]interface{}{"{{.id}}=?": {idMap.Id}})
+	span, c := xtrace.StartSpanFromContext(ctx, "{{.TableName}} DelServices Service")
+	defer span.Finish()
+	_,err = new({{.tableName}}.{{.TableName}}).Del(c, map[string][]interface{}{"{{.id}}=?": {idMap.Id}})
 	if err != nil {
 		xlog.Errorw("{{.tableName}} DelServices", err.Error())
 	}
@@ -59,7 +70,9 @@ func DelServices(ctx context.Context,idMap _map.IdMap) (err error) {
 }
 
 func RecDelServices(ctx context.Context,idMap _map.IdMap) (err error) {
-	_,err = new({{.tableName}}.{{.TableName}}).DelRes(ctx, map[string][]interface{}{"{{.id}}=?": {idMap.Id}})
+	span, c := xtrace.StartSpanFromContext(ctx, "{{.TableName}} RecDelServices Service")
+	defer span.Finish()
+	_,err = new({{.tableName}}.{{.TableName}}).DelRes(c, map[string][]interface{}{"{{.id}}=?": {idMap.Id}})
 	if err != nil {
 		xlog.Errorw("{{.tableName}} RecDelServices", err.Error())
 	}

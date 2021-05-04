@@ -2,6 +2,7 @@ package {{.tableName}}
 
 import (
 	"context"
+	"github.com/coder2z/g-server/xtrace"
 	"github.com/coder2z/{{.ProjectName}}/internal/model"
 	{{.Imports}}
 )
@@ -16,19 +17,25 @@ func (m *{{.TableName}}) TableName() string {
 
 //添加
 func (m *{{.TableName}}) Add(ctx context.Context) error {
-	return model.MainDB().Table(m.TableName()).WithContext(ctx).Create(m).Error
+	span, c := xtrace.StartSpanFromContext(ctx, "{{.TableName}} Model Add")
+	defer span.Finish()
+	return model.MainDB().Table(m.TableName()).WithContext(c).Create(m).Error
 }
 
 //批量添加
 func (m *{{.TableName}}) Adds(ctx context.Context, data *[]{{.TableName}}) (count int64, err error) {
-	tx := model.MainDB().Table(m.TableName()).WithContext(ctx).CreateInBatches(data, 200)
+	span, c := xtrace.StartSpanFromContext(ctx, "{{.TableName}} Model Adds")
+	defer span.Finish()
+	tx := model.MainDB().Table(m.TableName()).WithContext(c).CreateInBatches(data, 200)
 	err = tx.Error
 	count = tx.RowsAffected
 	return
 }
 
 func (m *{{.TableName}}) Del(ctx context.Context, wheres map[string][]interface{}) (count int64, err error) {
-	db := model.MainDB().Table(m.TableName()).WithContext(ctx)
+	span, c := xtrace.StartSpanFromContext(ctx, "{{.TableName}} Model Del")
+	defer span.Finish()
+	db := model.MainDB().Table(m.TableName()).WithContext(c)
 	for s, i := range wheres {
 		db = db.Where(s, i...)
 	}
@@ -39,7 +46,9 @@ func (m *{{.TableName}}) Del(ctx context.Context, wheres map[string][]interface{
 }
 
 func (m *{{.TableName}}) GetAll(ctx context.Context, data *[]{{.TableName}}, wheres map[string][]interface{}) (err error) {
-	db := model.MainDB().Table(m.TableName()).WithContext(ctx)
+	span, c := xtrace.StartSpanFromContext(ctx, "{{.TableName}} Model GetAll")
+	defer span.Finish()
+	db := model.MainDB().Table(m.TableName()).WithContext(c)
 	for s, i := range wheres {
 		db = db.Where(s, i...)
 	}
@@ -48,7 +57,9 @@ func (m *{{.TableName}}) GetAll(ctx context.Context, data *[]{{.TableName}}, whe
 }
 
 func (m *{{.TableName}}) Get(ctx context.Context, start int, size int, data *[]{{.TableName}}, wheres map[string][]interface{}, isDelete bool) (total int64, err error) {
-	db := model.MainDB().Table(m.TableName()).WithContext(ctx)
+	span, c := xtrace.StartSpanFromContext(ctx, "{{.TableName}} Model Get")
+	defer span.Finish()
+	db := model.MainDB().Table(m.TableName()).WithContext(c)
 	for s, i := range wheres {
 		db = db.Where(s, i...)
 	}
@@ -62,7 +73,9 @@ func (m *{{.TableName}}) Get(ctx context.Context, start int, size int, data *[]{
 }
 
 func (m *{{.TableName}}) GetById(ctx context.Context, IgnoreDel bool) error {
-	db := model.MainDB().Table(m.TableName()).WithContext(ctx)
+	span, c := xtrace.StartSpanFromContext(ctx, "{{.TableName}} Model GetById")
+	defer span.Finish()
+	db := model.MainDB().Table(m.TableName()).WithContext(c)
 	if !IgnoreDel {
 		db = db.Unscoped()
 	}
@@ -70,7 +83,9 @@ func (m *{{.TableName}}) GetById(ctx context.Context, IgnoreDel bool) error {
 }
 
 func (m *{{.TableName}}) GetByWhere(ctx context.Context, wheres map[string][]interface{}) error {
-	db := model.MainDB().Table(m.TableName()).WithContext(ctx)
+	span, c := xtrace.StartSpanFromContext(ctx, "{{.TableName}} Model GetByWhere")
+	defer span.Finish()
+	db := model.MainDB().Table(m.TableName()).WithContext(c)
 	for s, i := range wheres {
 		db = db.Where(s, i...)
 	}
@@ -78,7 +93,9 @@ func (m *{{.TableName}}) GetByWhere(ctx context.Context, wheres map[string][]int
 }
 
 func (m *{{.TableName}}) ExistWhere(ctx context.Context, wheres map[string][]interface{}) bool {
-	db := model.MainDB().Table(m.TableName()).WithContext(ctx)
+	span, c := xtrace.StartSpanFromContext(ctx, "{{.TableName}} Model ExistWhere")
+	defer span.Finish()
+	db := model.MainDB().Table(m.TableName()).WithContext(c)
 	for s, i := range wheres {
 		db = db.Where(s, i...)
 	}
@@ -87,7 +104,9 @@ func (m *{{.TableName}}) ExistWhere(ctx context.Context, wheres map[string][]int
 }
 
 func (m *{{.TableName}}) UpdatesWhere(ctx context.Context, wheres map[string][]interface{}) error {
-	db := model.MainDB().Table(m.TableName()).WithContext(ctx)
+	span, c := xtrace.StartSpanFromContext(ctx, "{{.TableName}} Model UpdatesWhere")
+	defer span.Finish()
+	db := model.MainDB().Table(m.TableName()).WithContext(c)
 	for s, i := range wheres {
 		db = db.Where(s, i...)
 	}
@@ -95,19 +114,19 @@ func (m *{{.TableName}}) UpdatesWhere(ctx context.Context, wheres map[string][]i
 }
 
 func (m *{{.TableName}}) UpdateWhere(ctx context.Context, wheres map[string][]interface{}, column string, value interface{}) error {
-	db := model.MainDB().Table(m.TableName()).WithContext(ctx)
+	span, c := xtrace.StartSpanFromContext(ctx, "{{.TableName}} Model UpdateWhere")
+	defer span.Finish()
+	db := model.MainDB().Table(m.TableName()).WithContext(c)
 	for s, i := range wheres {
 		db = db.Where(s, i...)
 	}
 	return db.Update(column, value).Error
 }
 
-func (m *{{.TableName}}) UpdateStatus(ctx context.Context, status uint32) error {
-	return model.MainDB().Table(m.TableName()).WithContext(ctx).Where("id=?", m.{{.ID}}).Update("status", status).Error
-}
-
 func (m *{{.TableName}}) DelRes(ctx context.Context, wheres map[string][]interface{}) (count int64, err error) {
-	db := model.MainDB().Table(m.TableName()).WithContext(ctx)
+	span, c := xtrace.StartSpanFromContext(ctx, "{{.TableName}} Model DelRes")
+	defer span.Finish()
+	db := model.MainDB().Table(m.TableName()).WithContext(c)
 	for s, i := range wheres {
 		db = db.Where(s, i...)
 	}
@@ -118,7 +137,9 @@ func (m *{{.TableName}}) DelRes(ctx context.Context, wheres map[string][]interfa
 }
 
 func (m *{{.TableName}}) Count(ctx context.Context, wheres map[string][]interface{}, isDelete bool) (count int64, err error) {
-	db := model.MainDB().Table(m.TableName()).WithContext(ctx)
+	span, c := xtrace.StartSpanFromContext(ctx, "{{.TableName}} Model Count")
+	defer span.Finish()
+	db := model.MainDB().Table(m.TableName()).WithContext(c)
 	for s, i := range wheres {
 		db = db.Where(s, i...)
 	}
